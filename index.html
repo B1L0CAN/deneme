@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ana Sayfa</title>
+  <link rel="stylesheet" href="style.css"> <!-- Harici CSS dosyasını dahil etmek için -->
+  <script src="script.js"></script> <!-- Harici JS dosyasını dahil etmek için -->
+</head>
+<body>
+
+<!-- Üstteki kontrol butonları, bunlar ayrı divde çünkü yan yana koymak için, block işi cssde -->
+<div class="ust-butonlar">
+  <button onclick="toggleAllMenus()" id="toggleAllBtn">Tümünü Aç</button>
+  <button onclick="uygulaSecilenler()" id="applySelectedBtn">Seçilenleri Uygula</button>
+  <button onclick="secilenlerIptal()" id="cancelSelectedBtn">Seçilenleri Temizle</button>
+</div>
+
+<!-- Menü: Veriler -->
+<div class="menu">
+  <div class="menu-header" onclick="toggleMenu('menu1')">1. Veriler</div>
+  <div class="submenu" id="menu1">
+    <button data-action="verileriGonder">Verileri Gönder</button>
+  </div>
+</div>
+
+<!-- Menü: Ayarlar -->
+<div class="menu">
+  <div class="menu-header" onclick="toggleMenu('menu2')">2. Ayarlar</div>
+  <div class="submenu" id="menu2">
+    <button data-action="ayarKaydet">Ayarları Kaydet</button>
+    <button data-action="ayarDegistir">Ayarları Değiştir</button>
+    <button data-action="ayarSil">Ayarları Sil</button>
+
+    <!-- Alt Menü: Gelişmiş Ayarlar -->
+    <div class="menu-header" onclick="toggleMenu('submenu2')">2.1. Gelişmiş Ayarlar</div>
+    <div class="submenu" id="submenu2">
+      <button data-action="gelismisDegistir">Gelişmiş Ayar Değiştir</button>
+      <button data-action="gelismisSil">Gelişmiş Ayar Sil</button>
+
+      <!-- Alt Menü: Benim -->
+      <div class="menu-header" onclick="toggleMenu('submenu3')">2.2. Benim</div>
+      <div class="submenu" id="submenu3">
+        <button data-action="Ben1">Ben1</button>
+        <button data-action="Ben2">Ben2</button>
+
+        <!-- Alt Menü: Deneme -->
+        <div class="menu-header" onclick="toggleMenu('submenu4')">2.3. Deneme</div>
+        <div class="submenu" id="submenu4">
+          <button data-action="Dene1">Dene1</button>
+          <button data-action="Dene2">Dene2</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Menü: Raporlar -->
+<div class="menu">
+  <div class="menu-header" onclick="toggleMenu('menu3')">3. Raporlar</div>
+  <div class="submenu" id="menu3">
+    <button data-action="pdfIndir">PDF Olarak İndir</button>
+    <button data-action="mailGonder">Mail Gönder</button>
+  </div>
+</div>
+
+</body>
+</html>

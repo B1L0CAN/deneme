@@ -1,0 +1,57 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.menu {
+  margin-bottom: 20px;
+}
+
+.menu-header, .submenu-header {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  margin-top: 10px;
+}
+
+.submenu {
+  margin-left: 20px;
+  margin-top: 5px;
+  display: none;
+}
+
+.ust-butonlar {
+  display: flex;
+  gap: 10px; /* Butonlar arası boşluk */
+  margin-bottom: 20px;
+  
+}
+
+.ust-butonlar button {
+  display: inline-block;
+  background-color: black;
+}
+
+
+button {
+  margin: 6px 0;
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #444;
+  background-color: red;
+  cursor: pointer;
+  border-radius: 4px;
+  display: block;
+  color: white;
+}
+
+button:hover {
+  background-color: green;
+  color: white;
+}
+
+button.secili {
+  background-color: green !important;
+  color: white !important;
+}
