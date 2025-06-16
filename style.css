@@ -79,3 +79,102 @@ button.secili {
   background-color: green;
   color: white;
 }
+
+/* Sağdaki kutucuklar için stil */
+.output-box {
+  border: 2px solid #222;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 32px;
+  background: #fafafa;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: block;
+  overflow: visible;
+  line-height: 1.2;
+}
+
+.output-title {
+  font-weight: bold;
+  color: #d32f2f;
+  margin-bottom: 0;
+  font-size: 17px;
+  display: block;
+}
+
+.output-value {
+  color: #222;
+  font-size: 16px;
+  margin-top: 2px;
+  margin-bottom: 0;
+  display: block;
+}
+
+#output-area {
+  margin-top: 10px;
+}
+
+.xml-output {
+  background: #222;
+  color: #fff;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 0;
+  margin-bottom: 40px;
+  font-size: 15px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  display: block;
+  overflow: visible;
+}
+
+.output-area-right {
+  margin-left: auto;
+  margin-right: 4vw;
+  min-width: 420px;
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100vh;
+  justify-content: flex-start;
+}
+
+.output-scroll-container {
+  width: 100%;
+  min-width: 350px;
+  max-width: 600px;
+  height: 60vh;
+  min-height: 60vh;
+  max-height: 80vh;
+  background: #fff;
+  border: 2px solid #bbb;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.attribute-list {
+  display: inline-block;
+  margin-left: 14px;
+  font-size: 13px;
+  font-style: italic;
+  vertical-align: middle;
+}
