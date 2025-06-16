@@ -3,65 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <title>Ana Sayfa</title>
-  <link rel="stylesheet" href="style.css"> <!-- Harici CSS dosyasını dahil etmek için -->
-  <script src="script.js"></script> <!-- Harici JS dosyasını dahil etmek için -->
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
 
-<!-- Üstteki kontrol butonları, bunlar ayrı divde çünkü yan yana koymak için, block işi cssde -->
-<div class="ust-butonlar">
-  <button onclick="toggleAllMenus()" id="toggleAllBtn">Tümünü Aç</button>
-  <button onclick="uygulaSecilenler()" id="applySelectedBtn">Seçilenleri Uygula</button>
-  <button onclick="secilenlerIptal()" id="cancelSelectedBtn">Seçilenleri Temizle</button>
-</div>
-
-<!-- Menü: Veriler -->
-<div class="menu">
-  <div class="menu-header" onclick="toggleMenu('menu1')">1. Veriler</div>
-  <div class="submenu" id="menu1">
-    <button data-action="verileriGonder">Verileri Gönder</button>
+  <!-- Üstteki kontrol butonları -->
+  <div class="ust-butonlar">
+    <button onclick="toggleAllMenus()" id="toggleAllBtn">Tümünü Aç</button>
+    <button onclick="uygulaSecilenler()" id="applySelectedBtn">Seçilenleri Uygula</button>
+    <button onclick="secilenlerIptal()" id="cancelSelectedBtn">Seçilenleri Temizle</button>
   </div>
-</div>
 
-<!-- Menü: Ayarlar -->
-<div class="menu">
-  <div class="menu-header" onclick="toggleMenu('menu2')">2. Ayarlar</div>
-  <div class="submenu" id="menu2">
-    <button data-action="ayarKaydet">Ayarları Kaydet</button>
-    <button data-action="ayarDegistir">Ayarları Değiştir</button>
-    <button data-action="ayarSil">Ayarları Sil</button>
-
-    <!-- Alt Menü: Gelişmiş Ayarlar -->
-    <div class="menu-header" onclick="toggleMenu('submenu2')">2.1. Gelişmiş Ayarlar</div>
-    <div class="submenu" id="submenu2">
-      <button data-action="gelismisDegistir">Gelişmiş Ayar Değiştir</button>
-      <button data-action="gelismisSil">Gelişmiş Ayar Sil</button>
-
-      <!-- Alt Menü: Benim -->
-      <div class="menu-header" onclick="toggleMenu('submenu3')">2.2. Benim</div>
-      <div class="submenu" id="submenu3">
-        <button data-action="Ben1">Ben1</button>
-        <button data-action="Ben2">Ben2</button>
-
-        <!-- Alt Menü: Deneme -->
-        <div class="menu-header" onclick="toggleMenu('submenu4')">2.3. Deneme</div>
-        <div class="submenu" id="submenu4">
-          <button data-action="Dene1">Dene1</button>
-          <button data-action="Dene2">Dene2</button>
+  <div class="menu">
+    <div class="menu-item">
+      <span class="arrow" onclick="toggleMenu('submenuProje', this)">▶</span>
+      <button class="menu-button" data-action="proje">Proje</button>
+    </div>
+    <div class="submenu" id="submenuProje">
+      <div class="menu-item">
+        <span class="arrow" onclick="toggleMenu('submenuBilesen', this)">▶</span>
+        <button class="menu-button" data-action="bilesen">Bileşen</button>
+      </div>
+      <div class="submenu" id="submenuBilesen">
+        <div class="menu-item">
+          <span class="arrow" onclick="toggleMenu('submenuArayuz', this)">▶</span>
+          <button class="menu-button" data-action="arayuz">Arayüz</button>
         </div>
+        <div class="submenu" id="submenuArayuz">
+          <div class="menu-item">
+            <span class="arrow" onclick="toggleMenu('submenuServis', this)">▶</span>
+            <button class="menu-button" data-action="servis">Servis</button>
+          </div>
+          <div class="submenu" id="submenuServis">
+            <div class="menu-item">
+              <span class="arrow" onclick="toggleMenu('submenuMesaj', this)">▶</span>
+              <button class="menu-button" data-action="mesaj">Mesaj</button>
+            </div>
+            <div class="submenu" id="submenuMesaj">
+              <div class="menu-item">
+                <button class="menu-button" data-action="parametre">Parametre</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <span class="arrow" onclick="toggleMenu('submenuTipler', this)">▶</span>
+        <button class="menu-button" data-action="tipler">Tipler Paketi</button>
+      </div>
+      <div class="submenu" id="submenuTipler">
+        <div class="menu-item"><button class="menu-button" data-action="tipVoid">Void</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipInt">Int</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipFloat">Float</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipDouble">Double</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipChar">Char</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipString">String</button></div>
+        <div class="menu-item"><button class="menu-button" data-action="tipShort">Short</button></div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Menü: Raporlar -->
-<div class="menu">
-  <div class="menu-header" onclick="toggleMenu('menu3')">3. Raporlar</div>
-  <div class="submenu" id="menu3">
-    <button data-action="pdfIndir">PDF Olarak İndir</button>
-    <button data-action="mailGonder">Mail Gönder</button>
-  </div>
-</div>
 
 </body>
 </html>
