@@ -96,6 +96,17 @@ button.secili {
   display: block;
   overflow: visible;
   line-height: 1.2;
+  /* eklendi: kutu içeriğini ortalamak için */
+  display: flex; /* eklendi */
+  flex-direction: column; /* eklendi */
+  align-items: center; /* eklendi */
+}
+
+.output-box > * {
+  margin-left: auto; /* eklendi */
+  margin-right: auto; /* eklendi */
+  margin-top: 4px; /* eklendi */
+  margin-bottom: 4px; /* eklendi */
 }
 
 .output-title {
@@ -104,6 +115,10 @@ button.secili {
   margin-bottom: 0;
   font-size: 17px;
   display: block;
+  text-align: center; /* eklendi */
+  margin-left: auto; /* eklendi */
+  margin-right: auto; /* eklendi */
+  /* font-size: 1.3rem; // değiştirildi ve tekrar 17px'e döndü */
 }
 
 .output-value {
@@ -112,6 +127,15 @@ button.secili {
   margin-top: 2px;
   margin-bottom: 0;
   display: block;
+  text-align: center; /* eklendi */
+}
+
+.output-box input[type="text"] {
+  width: 60%; /* eklendi */
+  height: 28px; /* eklendi */
+  font-size: 15px; /* eklendi */
+  padding: 2px 6px; /* eklendi */
+  box-sizing: border-box; /* eklendi */
 }
 
 #output-area {
@@ -140,23 +164,24 @@ button.secili {
 .output-area-right {
   margin-left: auto;
   margin-right: 4vw;
-  min-width: 420px;
-  max-width: 600px;
+  min-width: 600px; /* değiştirildi */
+  max-width: 60vw;  /* değiştirildi */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   height: 100vh;
   justify-content: flex-start;
+  margin-top: 8px; /* eklendi */
 }
 
 .output-scroll-container {
   width: 100%;
-  min-width: 350px;
-  max-width: 600px;
-  height: 60vh;
-  min-height: 60vh;
-  max-height: 80vh;
+  min-width: 600px; /* değiştirildi */
+  max-width: 60vw;  /* değiştirildi */
+  height: 60vh;     /* değiştirildi */
+  min-height: 60vh; /* değiştirildi */
+  max-height: 80vh; /* değiştirildi */
   background: #fff;
   border: 2px solid #bbb;
   border-radius: 18px;
@@ -169,6 +194,19 @@ button.secili {
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
+}
+
+.output-box button,
+.output-scroll-container button {
+  display: inline-block; /* değiştirildi */
+  margin-left: auto;     /* eklendi */
+  margin-right: auto;    /* eklendi */
+  text-align: center;    /* eklendi */
+}
+
+.output-scroll-container > div[style*='display: flex'] {
+  justify-content: center !important; /* eklendi */
+  width: 100%;                        /* eklendi */
 }
 
 .attribute-list {
