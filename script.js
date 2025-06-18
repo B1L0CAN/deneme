@@ -44,81 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-// Başlık ve attribute yapılarını tanımla
-const attributeMap = {
-  proje: [
-    { key: 'isim', label: 'İsim', type: 'string', value: 'DemoProje' },
-    { key: 'versiyon', label: 'Versiyon', type: 'string', value: '1.0.0' },
-    { key: 'buildNo', label: 'Build No', type: 'int', value: 101 }
-  ],
-  bilesen: [
-    { key: 'isim', label: 'İsim', type: 'string', value: 'AnaBilesen' }
-  ],
-  arayuz: [
-    { key: 'isim', label: 'İsim', type: 'string', value: 'KullaniciArayuzu' }
-  ],
-  servis: [
-    { key: 'isim', label: 'İsim', type: 'string', value: 'VeriServisi' },
-    { key: 'acikKapali', label: 'Açık/Kapalı', type: 'boolean', value: true }
-  ],
-  mesaj: [
-    { key: 'mesajId', label: 'Mesaj ID', type: 'int', value: 123 },
-    { key: 'isim', label: 'İsim', type: 'string', value: 'BilgiMesaji' },
-    { key: 'bypass', label: 'Bypass', type: 'boolean', value: false }
-  ],
-  parametre: [
-    { key: 'isim', label: 'İsim', type: 'string', value: 'Param1' },
-    { key: 'tip', label: 'Tip', type: 'string', value: 'String' },
-    { key: 'koleksiyon', label: 'Koleksiyon', type: 'string', value: 'Liste' }
-  ]
-};
-
 // Sabit tipler dizisi
 const SABIT_TIPLER = [
   "void", "short", "int", "long", "float", "double", "char", "string", "nullTerminatedString",
   "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "bool8", "bool16", "bool32"
 ];
 
-function generateXML(type, attributes) {
-  let xml = `<${capitalize(type)}>`;
-  attributes.forEach(attr => {
-    xml += `\n  <${capitalize(attr.key)}>${attr.value}</${capitalize(attr.key)}>`;
-  });
-  xml += `\n</${capitalize(type)}>`;
-  return xml;
-}
-
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function showOutputForSelected(selectedTypes) {
-  const scrollContainer = document.getElementById('output-scroll-container');
-  if (!scrollContainer) return;
-  scrollContainer.innerHTML = '';
-  selectedTypes.forEach(type => {
-    const attrs = attributeMap[type];
-    if (!attrs) return;
-    // Kutucuklar
-    attrs.forEach(attr => {
-      const box = document.createElement('div');
-      box.className = 'output-box';
-      box.innerHTML = `<div class='output-title'>${attr.label}</div><div class='output-value'>${attr.value}</div>`;
-      scrollContainer.appendChild(box);
-    });
-    // XML çıktısı
-    const xmlStr = generateXML(type, attrs);
-    const xmlBox = document.createElement('div');
-    xmlBox.className = 'xml-output';
-    xmlBox.textContent = xmlStr;
-    scrollContainer.appendChild(xmlBox);
-  });
-}
-
-function uygulaSecilenler() {
-  // İşlev kaldırıldı.
-}
 function secilenlerIptal() {
   const seciliButon = document.querySelector("button.secili");
 
@@ -157,7 +92,6 @@ function secilenlerIptal() {
     cancelBtn.textContent = originalText;
   }, 750);
 }
-
 
 // Adım adım input alanları için yapı
 const steps = [
@@ -199,8 +133,8 @@ const steps = [
     messageFields: [
       { key: 'a', label: 'a', type: 'string' },
       { key: 'b', label: 'b', type: 'string' },
-      { key: 'c', label: 'c', type: 'string' },
-      { key: 'd', label: 'd', type: 'string' }
+      { key: 'c', label: 'c', type: 'int' },
+      { key: 'd', label: 'd', type: 'boolean' }
     ],
     paramFields: [
       { key: 'a', label: 'a', type: 'string' },
@@ -243,7 +177,6 @@ let formData = {
   tiplers: []  
 };
 
-
 function renderStep() {
   const scrollContainer = document.getElementById('output-scroll-container');
   if (!scrollContainer) return;
@@ -264,6 +197,10 @@ function renderStep() {
       const label = document.createElement('label');
       label.className = 'output-title';
       label.textContent = field.label;
+      label.style.display = 'flex';
+      label.style.flexDirection = 'column';
+      label.style.alignItems = 'center';
+      label.style.width = '100%';
       const input = document.createElement('input');
       input.type = 'text';
       input.value = formData[step.key][field.key] || '';
@@ -271,8 +208,9 @@ function renderStep() {
       input.oninput = (e) => {
         formData[step.key][field.key] = e.target.value;
       };
+      input.style.margin = '0 auto';
+      label.appendChild(input);
       box.appendChild(label);
-      box.appendChild(input);
       scrollContainer.appendChild(box);
     });
   }
@@ -290,6 +228,10 @@ function renderStep() {
       const label = document.createElement('label');
       label.className = 'output-title';
       label.textContent = field.label;
+      label.style.display = 'flex';
+      label.style.flexDirection = 'column';
+      label.style.alignItems = 'center';
+      label.style.width = '100%';
       let input;
       if (field.type === 'boolean') {
         input = document.createElement('input');
@@ -306,6 +248,7 @@ function renderStep() {
           formData.mesaj.header[field.key] = e.target.value;
         };
       }
+      input.style.margin = '0 auto';
       label.appendChild(input);
       headerBox.appendChild(label);
     });
@@ -328,6 +271,10 @@ function renderStep() {
         const label = document.createElement('label');
         label.className = 'output-title';
         label.textContent = field.label;
+        label.style.display = 'flex';
+        label.style.flexDirection = 'column';
+        label.style.alignItems = 'center';
+        label.style.width = '100%';
         // Sadece ilk alan (a) için combobox, diğerleri için input
         if (fieldIdx === 0) {
           const select = document.createElement('select');
@@ -337,7 +284,7 @@ function renderStep() {
           // Sabit tipler
           SABIT_TIPLER.forEach((tip, idx) => {
             const option = document.createElement('option');
-            option.value = `//@TiplerPaketi/@tipler.${idx}`;
+            option.value = `//@TiplersPaketi/@tiplers.${idx}`;
             option.textContent = tip;
             select.appendChild(option);
           });
@@ -345,7 +292,7 @@ function renderStep() {
           if (formData.tiplers && formData.tiplers.length > 0) {
             formData.tiplers.forEach((tip, idx) => {
               const option = document.createElement('option');
-              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
+              option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
               option.textContent = tip.adi;
               select.appendChild(option);
             });
@@ -355,14 +302,30 @@ function renderStep() {
           select.onchange = (e) => {
             msg[field.key] = e.target.value;
           };
+          select.style.margin = '0 auto';
           label.appendChild(select);
         } else {
           const input = document.createElement('input');
-          input.type = 'text';
-          input.value = msg[field.key] || '';
-          input.oninput = (e) => {
-            msg[field.key] = e.target.value;
-          };
+          if (field.type === 'int') {
+            input.type = 'number';
+            input.value = msg[field.key] || '';
+            input.oninput = (e) => {
+              msg[field.key] = parseInt(e.target.value) || 0;
+            };
+          } else if (field.type === 'boolean') {
+            input.type = 'checkbox';
+            input.checked = !!msg[field.key];
+            input.onchange = (e) => {
+              msg[field.key] = e.target.checked;
+            };
+          } else {
+            input.type = 'text';
+            input.value = msg[field.key] || '';
+            input.oninput = (e) => {
+              msg[field.key] = e.target.value;
+            };
+          }
+          input.style.margin = '0 auto';
           label.appendChild(input);
         }
         msgBox.appendChild(label);
@@ -377,12 +340,31 @@ function renderStep() {
         const label = document.createElement('label');
         label.className = 'output-title';
         label.textContent = field.label;
+        label.style.display = 'flex';
+        label.style.flexDirection = 'column';
+        label.style.alignItems = 'center';
+        label.style.width = '100%';
         const input = document.createElement('input');
-        input.type = 'text';
-        input.value = msg.param[field.key] || '';
-        input.oninput = (e) => {
-          msg.param[field.key] = e.target.value;
-        };
+        if (field.type === 'int') {
+          input.type = 'number';
+          input.value = msg.param[field.key] || '';
+          input.oninput = (e) => {
+            msg.param[field.key] = parseInt(e.target.value) || 0;
+          };
+        } else if (field.type === 'boolean') {
+          input.type = 'checkbox';
+          input.checked = !!msg.param[field.key];
+          input.onchange = (e) => {
+            msg.param[field.key] = e.target.checked;
+          };
+        } else {
+          input.type = 'text';
+          input.value = msg.param[field.key] || '';
+          input.oninput = (e) => {
+            msg.param[field.key] = e.target.value;
+          };
+        }
+        input.style.margin = '0 auto';
         label.appendChild(input);
         msgBox.appendChild(label);
       });
@@ -499,20 +481,20 @@ function generateFullXML() {
   xml += '/>';
   // Tipler
   if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
-    xml += `\n  <TiplerPaketi>\n`;
+    xml += `\n  <TiplersPaketi>\n`;
     SABIT_TIPLER.forEach((tip, idx) => {
-      xml += `    <tipler isim="${tip}"/>\n`;
+      xml += `    <tiplers isim="${tip}"/>\n`;
     });
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip, idx) => {
-        xml += `    <tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+        xml += `    <tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
         tip.degerler.forEach((deger, i) => {
           xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
         });
-        xml += `    </tipler>\n`;
+        xml += `    </tiplers>\n`;
       });
     }
-    xml += `  </TiplerPaketi>\n`;
+    xml += `  </TiplersPaketi>\n`;
   }
   // Kapanış tagları
   xml += `</Proje>\n`;
@@ -551,7 +533,7 @@ const hierarchy = {
   arayuz: {
     label: 'Arayüz',
     fields: [
-      { key: 'a', label: 'a', type: 'string' },
+      { key: 'a', label: 'Bileşen Sırası', type: 'bilesenSira' },
       { key: 'b', label: 'b', type: 'string' }
     ],
     child: 'servis'
@@ -559,7 +541,10 @@ const hierarchy = {
   servis: {
     label: 'Servis',
     fields: [
-      { key: 'a', label: 'a', type: 'string' }
+      { key: 'a', label: 'a', type: 'string' },
+      { key: 'b', label: 'b', type: 'string' },
+      { key: 'c', label: 'c', type: 'boolean' },
+      { key: 'd', label: 'd', type: 'boolean' }
     ],
     child: 'mesaj'
   },
@@ -580,8 +565,8 @@ const hierarchy = {
     messageFields: [
       { key: 'a', label: 'a', type: 'string' },
       { key: 'b', label: 'b', type: 'string' },
-      { key: 'c', label: 'c', type: 'string' },
-      { key: 'd', label: 'd', type: 'string' }
+      { key: 'c', label: 'c', type: 'int' },
+      { key: 'd', label: 'd', type: 'boolean' }
     ],
     paramFields: [
       { key: 'a', label: 'a', type: 'string' },
@@ -618,21 +603,84 @@ function renderHierarchicalInput(key) {
 
   // Normal alanlar
   if (node.fields) {
-    node.fields.forEach(field => {
+    node.fields.forEach((field, fieldIdx) => {
+      if (key === 'arayuz' && field.key === 'a') {
+        // A parametresi için readonly input göster
+        const box = document.createElement('div');
+        box.className = 'output-box';
+        const label = document.createElement('label');
+        label.className = 'output-title';
+        label.textContent = field.label;
+        label.style.display = 'flex';
+        label.style.flexDirection = 'column';
+        label.style.alignItems = 'center';
+        label.style.width = '100%';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = '//@bilesenler.0';
+        input.readOnly = true;
+        input.className = 'output-value';
+        input.style.backgroundColor = '#f0f0f0';
+        input.style.textAlign = 'center';
+        input.style.margin = '0 auto';
+        hierarchicalData[key][field.key] = '//@bilesenler.0';
+        label.appendChild(input);
+        box.appendChild(label);
+        scrollContainer.appendChild(box);
+        return;
+      }
       const box = document.createElement('div');
       box.className = 'output-box';
       const label = document.createElement('label');
       label.className = 'output-title';
       label.textContent = field.label;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = hierarchicalData[key][field.key] || '';
-      input.className = 'output-value';
-      input.oninput = (e) => {
-        hierarchicalData[key][field.key] = e.target.value;
-      };
+      label.style.display = 'flex';
+      label.style.flexDirection = 'column';
+      label.style.alignItems = 'center';
+      label.style.width = '100%';
+      if (key === 'servis' && (field.key === 'c' || field.key === 'd')) {
+        // Boolean alanlar için checkbox
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = !!hierarchicalData[key][field.key];
+        input.onchange = (e) => {
+          hierarchicalData[key][field.key] = e.target.checked;
+        };
+        input.style.margin = '0 auto';
+        label.appendChild(input);
+      } else if (key === 'mesajlar' && field.key === 'c') {
+        // Mesajlardaki c alanı için int input
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.value = hierarchicalData[key][field.key] || '';
+        input.className = 'output-value';
+        input.oninput = (e) => {
+          hierarchicalData[key][field.key] = parseInt(e.target.value) || 0;
+        };
+        input.style.margin = '0 auto';
+        label.appendChild(input);
+      } else if (key === 'mesajlar' && field.key === 'd') {
+        // Mesajlardaki d alanı için boolean checkbox
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = !!hierarchicalData[key][field.key];
+        input.onchange = (e) => {
+          hierarchicalData[key][field.key] = e.target.checked;
+        };
+        input.style.margin = '0 auto';
+        label.appendChild(input);
+      } else {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = hierarchicalData[key][field.key] || '';
+        input.className = 'output-value';
+        input.oninput = (e) => {
+          hierarchicalData[key][field.key] = e.target.value;
+        };
+        input.style.margin = '0 auto';
+        label.appendChild(input);
+      }
       box.appendChild(label);
-      box.appendChild(input);
       scrollContainer.appendChild(box);
     });
   }
@@ -650,6 +698,10 @@ function renderHierarchicalInput(key) {
       const label = document.createElement('label');
       label.className = 'output-title';
       label.textContent = field.label;
+      label.style.display = 'flex';
+      label.style.flexDirection = 'column';
+      label.style.alignItems = 'center';
+      label.style.width = '100%';
       let input;
       if (field.type === 'boolean') {
         input = document.createElement('input');
@@ -666,6 +718,7 @@ function renderHierarchicalInput(key) {
           hierarchicalData.mesaj.header[field.key] = e.target.value;
         };
       }
+      input.style.margin = '0 auto';
       label.appendChild(input);
       headerBox.appendChild(label);
     });
@@ -689,6 +742,7 @@ function renderHierarchicalInput(key) {
         input.oninput = (e) => {
           param[field.key] = e.target.value;
         };
+        input.style.margin = '0 auto';
         label.appendChild(input);
         headerParamBox.appendChild(label);
       });
@@ -726,6 +780,10 @@ function renderHierarchicalInput(key) {
         const label = document.createElement('label');
         label.className = 'output-title';
         label.textContent = field.label;
+        label.style.display = 'flex';
+        label.style.flexDirection = 'column';
+        label.style.alignItems = 'center';
+        label.style.width = '100%';
         // Sadece ilk alan (a) için combobox, diğerleri için input
         if (fieldIdx === 0) {
           const select = document.createElement('select');
@@ -735,7 +793,7 @@ function renderHierarchicalInput(key) {
           // Sabit tipler
           SABIT_TIPLER.forEach((tip, idx) => {
             const option = document.createElement('option');
-            option.value = `//@TiplerPaketi/@tipler.${idx}`;
+            option.value = `//@TiplersPaketi/@tiplers.${idx}`;
             option.textContent = tip;
             select.appendChild(option);
           });
@@ -743,7 +801,7 @@ function renderHierarchicalInput(key) {
           if (formData.tiplers && formData.tiplers.length > 0) {
             formData.tiplers.forEach((tip, idx) => {
               const option = document.createElement('option');
-              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
+              option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
               option.textContent = tip.adi;
               select.appendChild(option);
             });
@@ -753,14 +811,30 @@ function renderHierarchicalInput(key) {
           select.onchange = (e) => {
             msg[field.key] = e.target.value;
           };
+          select.style.margin = '0 auto';
           label.appendChild(select);
         } else {
           const input = document.createElement('input');
-          input.type = 'text';
-          input.value = msg[field.key] || '';
-          input.oninput = (e) => {
-            msg[field.key] = e.target.value;
-          };
+          if (field.type === 'int') {
+            input.type = 'number';
+            input.value = msg[field.key] || '';
+            input.oninput = (e) => {
+              msg[field.key] = parseInt(e.target.value) || 0;
+            };
+          } else if (field.type === 'boolean') {
+            input.type = 'checkbox';
+            input.checked = !!msg[field.key];
+            input.onchange = (e) => {
+              msg[field.key] = e.target.checked;
+            };
+          } else {
+            input.type = 'text';
+            input.value = msg[field.key] || '';
+            input.oninput = (e) => {
+              msg[field.key] = e.target.value;
+            };
+          }
+          input.style.margin = '0 auto';
           label.appendChild(input);
         }
         msgBox.appendChild(label);
@@ -779,11 +853,26 @@ function renderHierarchicalInput(key) {
           label.className = 'output-title';
           label.textContent = field.label;
           const input = document.createElement('input');
-          input.type = 'text';
-          input.value = param[field.key] || '';
-          input.oninput = (e) => {
-            param[field.key] = e.target.value;
-          };
+          if (field.type === 'int') {
+            input.type = 'number';
+            input.value = param[field.key] || '';
+            input.oninput = (e) => {
+              param[field.key] = parseInt(e.target.value) || 0;
+            };
+          } else if (field.type === 'boolean') {
+            input.type = 'checkbox';
+            input.checked = !!param[field.key];
+            input.onchange = (e) => {
+              param[field.key] = e.target.checked;
+            };
+          } else {
+            input.type = 'text';
+            input.value = param[field.key] || '';
+            input.oninput = (e) => {
+              param[field.key] = e.target.value;
+            };
+          }
+          input.style.margin = '0 auto';
           label.appendChild(input);
           paramBox.appendChild(label);
         });
@@ -859,7 +948,6 @@ function renderHierarchicalInput(key) {
 
   scrollContainer.appendChild(navBox);
 }
-
 
 function generateHierarchicalXML() {
   // Girinti için fonksiyon
@@ -950,24 +1038,24 @@ function generateHierarchicalXML() {
 
   // TIPLER bölümü eklendi
   if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
-    xml += `\n${indent(2)}<TiplerPaketi>\n`;
+    xml += `\n${indent(2)}<TiplersPaketi>\n`;
     // SABİT TİPLER
     SABIT_TIPLER.forEach((tip, idx) => {
-      xml += `${indent(4)}<tipler isim="${tip}"/>\n`;
+      xml += `${indent(4)}<tiplers isim="${tip}"/>\n`;
     });
     // DİNAMİK TİPLER
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip, idx) => {
         if (tip.xmlGoster) {
-          xml += `${indent(4)}<tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+          xml += `${indent(4)}<tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
           tip.degerler.forEach((deger, i) => {
             xml += `${indent(6)}<degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
           });
-          xml += `${indent(4)}</tipler>\n`;
+          xml += `${indent(4)}</tiplers>\n`;
         }
       });
     }
-    xml += `${indent(2)}</TiplerPaketi>\n`;
+    xml += `${indent(2)}</TiplersPaketi>\n`;
   }
 
   // Kapanış tagları
@@ -1135,7 +1223,6 @@ function tipEkleEkraniOlustur() {
       formData.parametre = { ...hierarchicalData.parametre };
     }
     // Tipi ekle
-    if (!formData.tiplers) formData.tiplers = [];
     formData.tiplers.push({
       adi,
       aciklama,
@@ -1143,6 +1230,8 @@ function tipEkleEkraniOlustur() {
       degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList })),
       xmlGoster
     });
+    // Menüdeki tip listesini güncelle
+    guncelleTiplerMenusu();
     // Ekranı temizle, XML gösterme
     outputContainer.innerHTML = '';
   };
@@ -1178,4 +1267,42 @@ window.addEventListener('DOMContentLoaded', () => {
   setupMenuClicks();
   renderHierarchicalInput('proje');
 });
+
+// --- Menüde Tipler Listesi ---
+function guncelleTiplerMenusu() {
+  const submenuTipler = document.getElementById('submenuTipler');
+  if (!submenuTipler) return;
+  // Eski tip listesini kaldır
+  const eskiListe = document.getElementById('tiplerMenuListesi');
+  if (eskiListe) eskiListe.remove();
+  // Yeni tip listesi oluştur
+  if (formData.tiplers && formData.tiplers.length > 0) {
+    const tipListesi = document.createElement('div');
+    tipListesi.id = 'tiplerMenuListesi';
+    tipListesi.style.margin = '8px 0 0 0';
+    tipListesi.style.display = 'flex';
+    tipListesi.style.flexDirection = 'column';
+    tipListesi.style.gap = '4px';
+    formData.tiplers.forEach((tip) => {
+      const tipSatir = document.createElement('div');
+      tipSatir.textContent = tip.adi || '-';
+      tipSatir.style.borderBottom = '2px solid red';
+      tipSatir.style.padding = '2px 0 4px 0';
+      tipSatir.style.fontSize = '14px';
+      tipSatir.style.fontWeight = 'bold';
+      tipListesi.appendChild(tipSatir);
+    });
+    // Tip Ekle butonunun hemen altına ekle
+    const tipEkleBtnMenu = submenuTipler.querySelector('button[data-action="tipEkle"]');
+    if (tipEkleBtnMenu && tipEkleBtnMenu.parentNode) {
+      tipEkleBtnMenu.parentNode.insertAdjacentElement('afterend', tipListesi);
+    } else {
+      submenuTipler.appendChild(tipListesi);
+    }
+  }
+}
+// Tip eklendiğinde veya sayfa yüklendiğinde bu fonksiyonu çağır
+// tipEkleEkraniOlustur ve ilgili yerlere guncelleTiplerMenusu() ekle
+// Ayrıca sayfa yüklenince de çağır
+window.addEventListener('DOMContentLoaded', guncelleTiplerMenusu);
 
