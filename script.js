@@ -234,7 +234,7 @@ let formData = {
   arayuz: {},
   mesaj: { header: {}, messages: [] },
   parametre: {},
-  tipler: []  
+  tiplers: []  
 };
 
 
@@ -461,7 +461,23 @@ function generateFullXML() {
     if (v) xml += ` ${k}="${v}"`;
   });
   xml += '/>';
+  // Tipler
+  if (formData.tiplers && formData.tiplers.length > 0) {
+    xml += `\n  <TiplerPaketi>\n`;
+    formData.tiplers.forEach(tip => {
+      xml += `    <tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+      tip.degerler.forEach((deger, i) => {
+        xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
+      });
+      xml += `    </tiplers>\n`;
+    });
+    xml += `  </TiplerPaketi>\n`;
+  }
+  // Kapanış tagları
+  xml += `\n</Proje>\n`;
+
   return xml;
+
 }
 
 // Sayfa yüklendiğinde ilk adımı göster
@@ -863,16 +879,16 @@ function generateHierarchicalXML() {
   xml += `\n${indent(2)}</Bilesen>`;
 
 // TIPLER bölümü eklendi
-  if (formData.tipler && formData.tipler.length > 0) {
-    xml += `\n${indent(2)}<Tipler>\n`;
-    formData.tipler.forEach(tip => {
-      xml += `${indent(4)}<Tip adi="${tip.adi}">\n`;
-      tip.degerler.forEach(deger => {
-        xml += `${indent(6)}<Deger adi="${deger.adi}" />\n`;
+  if (formData.tiplers && formData.tiplers.length > 0) {
+    xml += `\n${indent(2)}<TiplerPaketi>\n`;
+    formData.tiplers.forEach(tip => {
+      xml += `${indent(4)}<tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+      tip.degerler.forEach((deger, i) => {
+        xml += `${indent(6)}<degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
       });
-      xml += `${indent(4)}</Tip>\n`;
+      xml += `${indent(4)}</tiplers>\n`;
     });
-    xml += `${indent(2)}</Tipler>\n`;
+    xml += `${indent(2)}</TiplerPaketi>\n`;
   }
 
   // Kapanış tagları
@@ -881,139 +897,188 @@ function generateHierarchicalXML() {
   return xml;
 }
 
-function kaydetTip() {
-  const tipAdiInput = document.getElementById('tipAdiInput');
-  const degerInputs = document.querySelectorAll('.deger-input'); 
+function tipEkleEkraniOlustur() {
+  const outputContainer = document.getElementById('output-scroll-container');
+  outputContainer.innerHTML = '';
 
-  const tipAdi = tipAdiInput.value.trim();
-  if (!tipAdi) {
-    // Hata göstermek istersek UI'da olabilir, ama alert istemediğin için burayı boş bırakabilirsin
-    return;
+  // Ana kutu
+  const tipBox = document.createElement('div');
+  tipBox.style.border = '2px solid #222';
+  tipBox.style.borderRadius = '12px';
+  tipBox.style.padding = '24px';
+  tipBox.style.margin = '24px 0';
+  tipBox.style.background = '#fff';
+  tipBox.style.maxWidth = '500px';
+  tipBox.style.marginLeft = 'auto';
+  tipBox.style.marginRight = 'auto';
+
+  // Başlık
+  const title = document.createElement('div');
+  title.textContent = 'Yeni Tip Ekle';
+  title.style.textAlign = 'center';
+  title.style.fontWeight = 'bold';
+  title.style.fontSize = '1.5em';
+  title.style.color = 'red';
+  title.style.marginBottom = '16px';
+  tipBox.appendChild(title);
+
+  // 3 string input
+  const labelStyle = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;justify-content:center;font-weight:bold;color:#b00;';
+  const inputStyle = 'padding:4px 8px;border-radius:4px;border:1px solid #aaa;min-width:180px;';
+
+  const adiDiv = document.createElement('div');
+  adiDiv.style = labelStyle;
+  adiDiv.innerHTML = 'Tip Adı: <input type="text" id="tipAdiInput" style="' + inputStyle + '" />';
+  tipBox.appendChild(adiDiv);
+
+  const aciklamaDiv = document.createElement('div');
+  aciklamaDiv.style = labelStyle;
+  aciklamaDiv.innerHTML = 'Açıklama: <input type="text" id="tipAciklamaInput" style="' + inputStyle + '" />';
+  tipBox.appendChild(aciklamaDiv);
+
+  const kodDiv = document.createElement('div');
+  kodDiv.style = labelStyle;
+  kodDiv.innerHTML = 'Kod: <input type="text" id="tipKodInput" style="' + inputStyle + '" />';
+  tipBox.appendChild(kodDiv);
+
+  // Değerler başlığı
+  const degerlerTitle = document.createElement('div');
+  degerlerTitle.textContent = 'Değerler';
+  degerlerTitle.style = 'text-align:center;font-weight:bold;color:red;margin:16px 0 8px 0;';
+  tipBox.appendChild(degerlerTitle);
+
+  // Değerler kutusu
+  const degerlerContainer = document.createElement('div');
+  degerlerContainer.id = 'degerlerContainer';
+  degerlerContainer.style = 'margin-bottom:12px;';
+  tipBox.appendChild(degerlerContainer);
+
+  // Değer ekle butonu
+  const degerEkleBtn = document.createElement('button');
+  degerEkleBtn.id = 'degerEkleBtn';
+  degerEkleBtn.textContent = '+ Değer Ekle';
+  degerEkleBtn.style = 'background:red;color:white;padding:8px 18px;border:none;border-radius:6px;font-weight:bold;display:block;margin:0 auto 16px auto;';
+  tipBox.appendChild(degerEkleBtn);
+
+  // Kaydet/İptal butonları
+  const btnBox = document.createElement('div');
+  btnBox.style = 'display:flex;gap:16px;justify-content:center;margin-top:16px;';
+  const kaydetBtn = document.createElement('button');
+  kaydetBtn.id = 'tipKaydetBtn';
+  kaydetBtn.textContent = 'Kaydet';
+  kaydetBtn.style = 'background:red;color:white;padding:8px 24px;border:none;border-radius:6px;font-weight:bold;';
+  const iptalBtn = document.createElement('button');
+  iptalBtn.id = 'tipIptalBtn';
+  iptalBtn.textContent = 'İptal';
+  iptalBtn.style = 'background:red;color:white;padding:8px 24px;border:none;border-radius:6px;font-weight:bold;';
+  btnBox.appendChild(kaydetBtn);
+  btnBox.appendChild(iptalBtn);
+  tipBox.appendChild(btnBox);
+
+  outputContainer.appendChild(tipBox);
+
+  let degerler = [];
+
+  function renderDegerler() {
+    degerlerContainer.innerHTML = '';
+    degerler.forEach((deger, idx) => {
+      const degerDiv = document.createElement('div');
+      degerDiv.style = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;justify-content:center;';
+      // nodeList (string) önce
+      const nodeListInput = document.createElement('input');
+      nodeListInput.type = 'text';
+      nodeListInput.value = deger.nodeList || '';
+      nodeListInput.placeholder = 'Değer';
+      nodeListInput.style = inputStyle + 'width:120px;';
+      nodeListInput.oninput = (e) => {
+        deger.nodeList = e.target.value;
+      };
+      // intValue (otomatik artan, değiştirilemez) sonra
+      const intValueInput = document.createElement('input');
+      intValueInput.type = 'number';
+      intValueInput.value = idx + 1;
+      intValueInput.disabled = true;
+      intValueInput.style = inputStyle + 'width:50px;text-align:center;';
+      // Sil butonu
+      const silBtn = document.createElement('button');
+      silBtn.textContent = 'Sil';
+      silBtn.style = 'background:red;color:white;padding:4px 12px;border:none;border-radius:4px;font-weight:bold;';
+      silBtn.onclick = () => {
+        degerler.splice(idx, 1);
+        renderDegerler();
+      };
+      degerDiv.appendChild(nodeListInput);
+      degerDiv.appendChild(intValueInput);
+      degerDiv.appendChild(silBtn);
+      degerlerContainer.appendChild(degerDiv);
+    });
   }
 
-  const degerler = [];
-  degerInputs.forEach(input => {
-    const val = input.value.trim();
-    if (val) {
-      degerler.push({ adi: val });
-    }
-  });
-
-  const yeniTip = {
-    adi: tipAdi,
-    degerler: degerler
+  degerEkleBtn.onclick = () => {
+    degerler.push({ nodeList: '' });
+    renderDegerler();
   };
 
-  if (!formData.tipler) formData.tipler = [];
-  formData.tipler.push(yeniTip);
+  kaydetBtn.onclick = () => {
+    const adi = document.getElementById('tipAdiInput').value.trim();
+    const aciklama = document.getElementById('tipAciklamaInput').value.trim();
+    const kod = document.getElementById('tipKodInput').value.trim();
+    // Alan kontrolü
+    if (!adi || !aciklama || !kod) {
+      alert('Lütfen tüm alanları doldurun!');
+      return;
+    }
+    if (degerler.length === 0 || degerler.some(d => !d.nodeList.trim())) {
+      alert('En az bir değer ekleyin ve tüm değer alanlarını doldurun!');
+      return;
+    }
+    // hierarchicalData'daki güncel verileri formData'ya kopyala
+    formData.proje = { ...hierarchicalData.proje };
+    formData.bilesen = { ...hierarchicalData.bilesen };
+    formData.arayuz = { ...hierarchicalData.arayuz };
+    formData.mesaj = JSON.parse(JSON.stringify(hierarchicalData.mesaj));
+    if (typeof hierarchicalData.parametre !== 'undefined') {
+      formData.parametre = { ...hierarchicalData.parametre };
+    }
+    // Tipi ekle
+    if (!formData.tiplers) formData.tiplers = [];
+    formData.tiplers.push({
+      adi,
+      aciklama,
+      kod,
+      degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList }))
+    });
+    // Hiyerarşik XML oluştur
+    const xml = generateHierarchicalXML();
+    outputContainer.innerHTML = '';
+    const xmlBox = document.createElement('div');
+    xmlBox.className = 'xml-output';
+    xmlBox.style.whiteSpace = 'pre-wrap';
+    xmlBox.style.fontFamily = 'monospace';
+    xmlBox.style.backgroundColor = '#111';
+    xmlBox.style.color = '#fff';
+    xmlBox.style.padding = '16px';
+    xmlBox.style.border = '1px solid #ccc';
+    xmlBox.style.borderRadius = '8px';
+    xmlBox.style.overflow = 'auto';
+    xmlBox.style.maxHeight = '600px';
+    xmlBox.textContent = xml;
+    outputContainer.appendChild(xmlBox);
+  };
 
-  tipAdiInput.value = '';
-  degerInputs.forEach(input => input.value = '');
+  iptalBtn.onclick = () => {
+    outputContainer.innerHTML = '';
+  };
 
-  // Burada alert veya console yok!
-
-  // Güncel tüm formData’dan XML oluştur
-  const xml = generateHierarchicalXML();
-
-  // XML'i ekranda göster (örneğin)
-  document.getElementById('output-scroll-container').textContent = xml;
-
-  // istersen bu XML'i başka fonksiyona da gönderebilirsin, ya da API çağrısı yapabilirsin
-  return xml;  // Dilersen döndür
+  renderDegerler();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btnTipEkle = document.querySelector('.menu-item .menu-button[data-action="tipEkle"]');  // Tip Ekle butonunu seçiyoruz
-  const outputContainer = document.getElementById('output-scroll-container');  // XML çıktısının gösterileceği container
-
-  btnTipEkle.addEventListener('click', () => {
-    // Temizle, yeni formu ekle
-    outputContainer.innerHTML = '';  // Önce mevcut içeriği temizliyoruz
-
-    // Form ana div
-    const tipForm = document.createElement('div');
-    tipForm.classList.add('tip-form');
-    tipForm.style.border = '1px solid #ccc';
-    tipForm.style.padding = '10px';
-    tipForm.style.margin = '10px 0';
-
-    tipForm.innerHTML = `
-      <h3>Yeni Tip Ekle</h3>
-      <label>Tip Adı: <input type="text" id="tipAdi" /></label>
-      <div id="degerlerContainer" style="margin-top:10px;"></div>
-      <button id="degerEkleBtn" type="button">Değer Ekle</button>
-      <br><br>
-      <button id="tipKaydetBtn" type="button">Kaydet</button>
-      <button id="tipIptalBtn" type="button">İptal</button>
-    `;
-
-    outputContainer.appendChild(tipForm);
-
-    const degerlerContainer = tipForm.querySelector('#degerlerContainer');
-    const degerEkleBtn = tipForm.querySelector('#degerEkleBtn');
-    const tipKaydetBtn = tipForm.querySelector('#tipKaydetBtn');
-    const tipIptalBtn = tipForm.querySelector('#tipIptalBtn');
-
-    // Değer ekleme fonksiyonu
-    degerEkleBtn.addEventListener('click', () => {
-      const degerDiv = document.createElement('div');
-      degerDiv.style.marginTop = '5px';
-
-      degerDiv.innerHTML = `
-        <input type="text" placeholder="Değer ismi" class="degerInput" />
-        <button type="button" class="degerSilBtn">Sil</button>
-      `;
-
-      degerlerContainer.appendChild(degerDiv);
-
-      degerDiv.querySelector('.degerSilBtn').addEventListener('click', () => {
-        degerlerContainer.removeChild(degerDiv);
-      });
-    });
-
-    tipIptalBtn.addEventListener('click', () => {
-      outputContainer.innerHTML = ''; // Formu kaldır
-    });
-
-    // Kaydet butonunun işlevi
-    tipKaydetBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      const tipAdi = tipForm.querySelector('#tipAdi').value.trim();
-      if (!tipAdi) {
-        alert('Tip adı boş olamaz!');
-        return;
-      }
-
-      const degerler = [];
-      tipForm.querySelectorAll('.degerInput').forEach(input => {
-        const val = input.value.trim();
-        if (val) degerler.push({ adi: val });
-      });
-
-      if (!formData.tipler) formData.tipler = [];
-      formData.tipler.push({ adi: tipAdi, degerler: degerler });
-
-      // Yeni XML oluştur
-      const xml = generateHierarchicalXML();  // XML'i oluşturmak için kullanılan fonksiyon
-
-      // XML’i düzgün girintili olarak textContent ile göster
-      const xmlOutput = document.createElement('pre');
-      xmlOutput.classList.add('xml-output');  // xml-output sınıfını ekliyoruz
-      xmlOutput.textContent = xml;  // XML çıktısını buraya ekliyoruz
-
-      // XML'i doğru container’a ekliyoruz
-      outputContainer.appendChild(xmlOutput);  // XML'ı çıktıya ekliyoruz
-
-      // Formu gizle ve sadece XML göster
-      tipForm.style.display = 'none';  // Tip ekleme formunu gizle
-
-      // XML çıktısı gösterilmeye başlandığında başka bir işlem yapılabilir
-      // Örneğin, XML çıktısı üzerine tıklanıp daha fazla işlem yapılabilir
-    });
-  });
+// Menüdeki Tip Ekle butonuna tıklanınca bu ekranı aç
+window.addEventListener('DOMContentLoaded', () => {
+  const btnTipEkle = document.querySelector('.menu-button[data-action="tipEkle"]');
+  if (btnTipEkle) {
+    btnTipEkle.addEventListener('click', tipEkleEkraniOlustur);
+  }
 });
-
 
 // Menü butonlarına tıklama ile input ekranı açılması
 function setupMenuClicks() {
@@ -1032,3 +1097,4 @@ window.addEventListener('DOMContentLoaded', () => {
   setupMenuClicks();
   renderHierarchicalInput('proje');
 });
+
