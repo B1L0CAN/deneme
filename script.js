@@ -74,6 +74,12 @@ const attributeMap = {
   ]
 };
 
+// Sabit tipler dizisi
+const SABIT_TIPLER = [
+  "void", "short", "int", "long", "float", "double", "char", "string", "nullTerminatedString",
+  "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "bool8", "bool16", "bool32"
+];
+
 function generateXML(type, attributes) {
   let xml = `<${capitalize(type)}>`;
   attributes.forEach(attr => {
@@ -318,17 +324,47 @@ function renderStep() {
       msgLabel.className = 'output-title';
       msgLabel.textContent = `Mesaj #${idx + 1}`;
       msgBox.appendChild(msgLabel);
-      step.messageFields.forEach(field => {
+      step.messageFields.forEach((field, fieldIdx) => {
         const label = document.createElement('label');
         label.className = 'output-title';
         label.textContent = field.label;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = msg[field.key] || '';
-        input.oninput = (e) => {
-          msg[field.key] = e.target.value;
-        };
-        label.appendChild(input);
+        // Sadece ilk alan (a) için combobox, diğerleri için input
+        if (fieldIdx === 0) {
+          const select = document.createElement('select');
+          select.style.padding = '4px 8px';
+          select.style.borderRadius = '4px';
+          select.style.minWidth = '180px';
+          // Sabit tipler
+          SABIT_TIPLER.forEach((tip, idx) => {
+            const option = document.createElement('option');
+            option.value = `//@TiplerPaketi/@tipler.${idx}`;
+            option.textContent = tip;
+            select.appendChild(option);
+          });
+          // Dinamik tipler
+          if (formData.tiplers && formData.tiplers.length > 0) {
+            formData.tiplers.forEach((tip, idx) => {
+              const option = document.createElement('option');
+              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
+              option.textContent = tip.adi;
+              select.appendChild(option);
+            });
+          }
+          // Seçili değer
+          select.value = msg[field.key] || '';
+          select.onchange = (e) => {
+            msg[field.key] = e.target.value;
+          };
+          label.appendChild(select);
+        } else {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = msg[field.key] || '';
+          input.oninput = (e) => {
+            msg[field.key] = e.target.value;
+          };
+          label.appendChild(input);
+        }
         msgBox.appendChild(label);
       });
       // Parametreler
@@ -462,22 +498,26 @@ function generateFullXML() {
   });
   xml += '/>';
   // Tipler
-  if (formData.tiplers && formData.tiplers.length > 0) {
+  if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
     xml += `\n  <TiplerPaketi>\n`;
-    formData.tiplers.forEach(tip => {
-      xml += `    <tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
-      tip.degerler.forEach((deger, i) => {
-        xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
-      });
-      xml += `    </tiplers>\n`;
+    SABIT_TIPLER.forEach((tip, idx) => {
+      xml += `    <tipler isim="${tip}"/>\n`;
     });
+    if (formData.tiplers && formData.tiplers.length > 0) {
+      formData.tiplers.forEach((tip, idx) => {
+        xml += `    <tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+        tip.degerler.forEach((deger, i) => {
+          xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
+        });
+        xml += `    </tipler>\n`;
+      });
+    }
     xml += `  </TiplerPaketi>\n`;
   }
   // Kapanış tagları
-  xml += `\n</Proje>\n`;
+  xml += `</Proje>\n`;
 
   return xml;
-
 }
 
 // Sayfa yüklendiğinde ilk adımı göster
@@ -682,17 +722,47 @@ function renderHierarchicalInput(key) {
       msgLabel.className = 'output-title';
       msgLabel.textContent = `Mesaj #${idx + 1}`;
       msgBox.appendChild(msgLabel);
-      node.messageFields.forEach(field => {
+      node.messageFields.forEach((field, fieldIdx) => {
         const label = document.createElement('label');
         label.className = 'output-title';
         label.textContent = field.label;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = msg[field.key] || '';
-        input.oninput = (e) => {
-          msg[field.key] = e.target.value;
-        };
-        label.appendChild(input);
+        // Sadece ilk alan (a) için combobox, diğerleri için input
+        if (fieldIdx === 0) {
+          const select = document.createElement('select');
+          select.style.padding = '4px 8px';
+          select.style.borderRadius = '4px';
+          select.style.minWidth = '180px';
+          // Sabit tipler
+          SABIT_TIPLER.forEach((tip, idx) => {
+            const option = document.createElement('option');
+            option.value = `//@TiplerPaketi/@tipler.${idx}`;
+            option.textContent = tip;
+            select.appendChild(option);
+          });
+          // Dinamik tipler
+          if (formData.tiplers && formData.tiplers.length > 0) {
+            formData.tiplers.forEach((tip, idx) => {
+              const option = document.createElement('option');
+              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
+              option.textContent = tip.adi;
+              select.appendChild(option);
+            });
+          }
+          // Seçili değer
+          select.value = msg[field.key] || '';
+          select.onchange = (e) => {
+            msg[field.key] = e.target.value;
+          };
+          label.appendChild(select);
+        } else {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = msg[field.key] || '';
+          input.oninput = (e) => {
+            msg[field.key] = e.target.value;
+          };
+          label.appendChild(input);
+        }
         msgBox.appendChild(label);
       });
       // Parametreler (çoklu)
@@ -878,21 +948,30 @@ function generateHierarchicalXML() {
   xml += `\n${indent(4)}</Arayuz>`;
   xml += `\n${indent(2)}</Bilesen>`;
 
-// TIPLER bölümü eklendi
-  if (formData.tiplers && formData.tiplers.length > 0) {
+  // TIPLER bölümü eklendi
+  if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
     xml += `\n${indent(2)}<TiplerPaketi>\n`;
-    formData.tiplers.forEach(tip => {
-      xml += `${indent(4)}<tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
-      tip.degerler.forEach((deger, i) => {
-        xml += `${indent(6)}<degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
-      });
-      xml += `${indent(4)}</tiplers>\n`;
+    // SABİT TİPLER
+    SABIT_TIPLER.forEach((tip, idx) => {
+      xml += `${indent(4)}<tipler isim="${tip}"/>\n`;
     });
+    // DİNAMİK TİPLER
+    if (formData.tiplers && formData.tiplers.length > 0) {
+      formData.tiplers.forEach((tip, idx) => {
+        if (tip.xmlGoster) {
+          xml += `${indent(4)}<tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+          tip.degerler.forEach((deger, i) => {
+            xml += `${indent(6)}<degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
+          });
+          xml += `${indent(4)}</tipler>\n`;
+        }
+      });
+    }
     xml += `${indent(2)}</TiplerPaketi>\n`;
   }
 
   // Kapanış tagları
-  xml += `\n</Proje>\n`;
+  xml += `</Proje>\n`;
 
   return xml;
 }
@@ -960,6 +1039,20 @@ function tipEkleEkraniOlustur() {
   degerEkleBtn.style = 'background:red;color:white;padding:8px 18px;border:none;border-radius:6px;font-weight:bold;display:block;margin:0 auto 16px auto;';
   tipBox.appendChild(degerEkleBtn);
 
+  // Checkbox ekle
+  const xmlGosterDiv = document.createElement('div');
+  xmlGosterDiv.style = 'display:flex;align-items:center;gap:8px;justify-content:center;margin:12px 0;';
+  const xmlGosterCheckbox = document.createElement('input');
+  xmlGosterCheckbox.type = 'checkbox';
+  xmlGosterCheckbox.id = 'tipXmlGosterCheckbox';
+  xmlGosterCheckbox.checked = true;
+  const xmlGosterLabel = document.createElement('label');
+  xmlGosterLabel.textContent = "XML'de göster";
+  xmlGosterLabel.htmlFor = 'tipXmlGosterCheckbox';
+  xmlGosterDiv.appendChild(xmlGosterCheckbox);
+  xmlGosterDiv.appendChild(xmlGosterLabel);
+  tipBox.appendChild(xmlGosterDiv);
+
   // Kaydet/İptal butonları
   const btnBox = document.createElement('div');
   btnBox.style = 'display:flex;gap:16px;justify-content:center;margin-top:16px;';
@@ -1023,6 +1116,7 @@ function tipEkleEkraniOlustur() {
     const adi = document.getElementById('tipAdiInput').value.trim();
     const aciklama = document.getElementById('tipAciklamaInput').value.trim();
     const kod = document.getElementById('tipKodInput').value.trim();
+    const xmlGoster = document.getElementById('tipXmlGosterCheckbox').checked;
     // Alan kontrolü
     if (!adi || !aciklama || !kod) {
       alert('Lütfen tüm alanları doldurun!');
@@ -1046,24 +1140,11 @@ function tipEkleEkraniOlustur() {
       adi,
       aciklama,
       kod,
-      degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList }))
+      degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList })),
+      xmlGoster
     });
-    // Hiyerarşik XML oluştur
-    const xml = generateHierarchicalXML();
+    // Ekranı temizle, XML gösterme
     outputContainer.innerHTML = '';
-    const xmlBox = document.createElement('div');
-    xmlBox.className = 'xml-output';
-    xmlBox.style.whiteSpace = 'pre-wrap';
-    xmlBox.style.fontFamily = 'monospace';
-    xmlBox.style.backgroundColor = '#111';
-    xmlBox.style.color = '#fff';
-    xmlBox.style.padding = '16px';
-    xmlBox.style.border = '1px solid #ccc';
-    xmlBox.style.borderRadius = '8px';
-    xmlBox.style.overflow = 'auto';
-    xmlBox.style.maxHeight = '600px';
-    xmlBox.textContent = xml;
-    outputContainer.appendChild(xmlBox);
   };
 
   iptalBtn.onclick = () => {
