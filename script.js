@@ -864,7 +864,7 @@ function generateHierarchicalXML() {
 
 // TIPLER bölümü eklendi
   if (formData.tipler && formData.tipler.length > 0) {
-    xml += `${indent(2)}<Tipler>\n`;
+    xml += `\n${indent(2)}<Tipler>\n`;
     formData.tipler.forEach(tip => {
       xml += `${indent(4)}<Tip adi="${tip.adi}">\n`;
       tip.degerler.forEach(deger => {
@@ -922,14 +922,13 @@ function kaydetTip() {
   return xml;  // Dilersen döndür
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
-  const btnTipEkle = document.querySelector('button[data-action="tipEkle"]');
-  const outputContainer = document.getElementById('output-scroll-container');
+  const btnTipEkle = document.querySelector('.menu-item .menu-button[data-action="tipEkle"]');  // Tip Ekle butonunu seçiyoruz
+  const outputContainer = document.getElementById('output-scroll-container');  // XML çıktısının gösterileceği container
 
   btnTipEkle.addEventListener('click', () => {
     // Temizle, yeni formu ekle
-    outputContainer.innerHTML = '';
+    outputContainer.innerHTML = '';  // Önce mevcut içeriği temizliyoruz
 
     // Form ana div
     const tipForm = document.createElement('div');
@@ -976,6 +975,7 @@ document.addEventListener('DOMContentLoaded', () => {
       outputContainer.innerHTML = ''; // Formu kaldır
     });
 
+    // Kaydet butonunun işlevi
     tipKaydetBtn.addEventListener('click', (e) => {
       e.preventDefault();
 
@@ -994,21 +994,26 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!formData.tipler) formData.tipler = [];
       formData.tipler.push({ adi: tipAdi, degerler: degerler });
 
-      const xml = generateHierarchicalXML();
+      // Yeni XML oluştur
+      const xml = generateHierarchicalXML();  // XML'i oluşturmak için kullanılan fonksiyon
 
       // XML’i düzgün girintili olarak textContent ile göster
-      outputContainer.textContent = xml;
+      const xmlOutput = document.createElement('pre');
+      xmlOutput.classList.add('xml-output');  // xml-output sınıfını ekliyoruz
+      xmlOutput.textContent = xml;  // XML çıktısını buraya ekliyoruz
 
-      // Burada formu kapatmak istersen aç, yoksa kapatma
-      // outputContainer.innerHTML = ''; // Bu satırı kaldırdım, form ve XML birlikte kalır
+      // XML'i doğru container’a ekliyoruz
+      outputContainer.appendChild(xmlOutput);  // XML'ı çıktıya ekliyoruz
 
+      // Formu gizle ve sadece XML göster
+      tipForm.style.display = 'none';  // Tip ekleme formunu gizle
+
+      // XML çıktısı gösterilmeye başlandığında başka bir işlem yapılabilir
+      // Örneğin, XML çıktısı üzerine tıklanıp daha fazla işlem yapılabilir
     });
   });
-
-  // Stil ayarları, çıktı kutusunun XML’i düzgün göstermesi için:
-  outputContainer.style.whiteSpace = 'pre-wrap';
-  outputContainer.style.fontFamily = 'monospace';
 });
+
 
 // Menü butonlarına tıklama ile input ekranı açılması
 function setupMenuClicks() {
