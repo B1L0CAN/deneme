@@ -430,7 +430,7 @@ function renderStep() {
 
 function generateFullXML() {
   // Proje
-  let xml = '<Proje';
+  let xml = '<arayuz:Proje';
   Object.entries(formData.proje).forEach(([k, v]) => {
     if (v) xml += ` ${k}="${v}"`;
   });
@@ -497,7 +497,7 @@ function generateFullXML() {
     xml += `  </TiplerPaketi>\n`;
   }
   // Kapanış tagları
-  xml += `</Proje>\n`;
+  xml += `</arayuz:Proje>\n`;
 
   return xml;
 }
@@ -1001,7 +1001,7 @@ function generateHierarchicalXML() {
 
   let xml = '';
   // Proje açılışı
-  xml += `<Proje`;
+  xml += `<arayuz:Proje`;
   Object.entries(hierarchicalData.proje).forEach(([k, v]) => { 
     xml += ` ${k}="${v || ''}"`; 
   });
@@ -1104,7 +1104,7 @@ function generateHierarchicalXML() {
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip) => {
         if (tip.xmlGoster) {
-          xml += `${indent(4)}<tipler adi="${tip.adi || ''}" aciklama="${tip.aciklama || ''}" kod="${tip.kod || ''}">\n`;
+          xml += `${indent(4)}<tipler adi="arayuz:${tip.adi || ''}" aciklama="${tip.aciklama || ''}" kod="${tip.kod || ''}">\n`;
           tip.degerler.forEach((deger, i) => {
             xml += `${indent(6)}<degerler nodeList="${deger.nodeList || ''}" intValue="${i + 1}"/>\n`;
           });
@@ -1116,7 +1116,7 @@ function generateHierarchicalXML() {
   }
 
   // Kapanış tagları
-  xml += `</Proje>\n`;
+  xml += `</arayuz:Proje>\n`;
 
   return xml;
 }
