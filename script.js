@@ -432,19 +432,19 @@ function generateFullXML() {
   // Proje
   let xml = '<arayuz:Proje';
   Object.entries(formData.proje).forEach(([k, v]) => {
-    if (v) xml += ` ${k}="${v}"`;
+    if (v) xml += ` ${k}="${typeof v === 'boolean' ? v : (v || '')}"`;
   });
   xml += '/>\n';
   // Bileşen
   xml += '<Bilesen';
   Object.entries(formData.bilesen).forEach(([k, v]) => {
-    if (v) xml += ` ${k}="${v}"`;
+    if (v) xml += ` ${k}="${typeof v === 'boolean' ? v : (v || '')}"`;
   });
   xml += '/>\n';
   // Arayüz
   xml += '<Arayuz';
   Object.entries(formData.arayuz).forEach(([k, v]) => {
-    if (v) xml += ` ${k}="${v}"`;
+    if (v) xml += ` ${k}="${typeof v === 'boolean' ? v : (v || '')}"`;
   });
   xml += '/>\n';
   // Mesajlar
@@ -452,21 +452,21 @@ function generateFullXML() {
   // Header
   xml += '  <Header';
   Object.entries(formData.mesaj.header).forEach(([k, v]) => {
-    if (v !== undefined && v !== '') xml += ` ${k}="${v}"`;
+    if (v !== undefined && v !== '') xml += ` ${k}="${typeof v === 'boolean' ? v : (v || '')}"`;
   });
   xml += '/>\n';
   // Mesajlar
   formData.mesaj.messages.forEach(msg => {
     xml += '  <Mesaj';
     steps[3].messageFields.forEach(field => {
-      if (msg[field.key]) xml += ` ${field.key}="${msg[field.key]}"`;
+      if (msg[field.key]) xml += ` ${field.key}="${typeof msg[field.key] === 'boolean' ? msg[field.key] : (msg[field.key] || '')}"`;
     });
     xml += '>'; // Mesaj başı
     // Parametre
     if (msg.param) {
       xml += '\n    <Parametre';
       steps[3].paramFields.forEach(field => {
-        if (msg.param[field.key]) xml += ` ${field.key}="${msg.param[field.key]}"`;
+        if (msg.param[field.key]) xml += ` ${field.key}="${typeof msg.param[field.key] === 'boolean' ? msg.param[field.key] : (msg.param[field.key] || '')}"`;
       });
       xml += '/>\n  ';
     }
@@ -476,20 +476,20 @@ function generateFullXML() {
   // Parametre
   xml += '<Parametre';
   Object.entries(formData.parametre).forEach(([k, v]) => {
-    if (v) xml += ` ${k}="${v}"`;
+    if (v) xml += ` ${k}="${typeof v === 'boolean' ? v : (v || '')}"`;
   });
   xml += '/>';
   // Tipler
   if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
     xml += `\n  <TiplerPaketi>\n`;
     SABIT_TIPLER.forEach((tip, idx) => {
-      xml += `    <tipler isim="${tip}"/>\n`;
+      xml += `    <tipler isim="${typeof tip === 'boolean' ? tip : (tip || '')}"/>\n`;
     });
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip, idx) => {
-        xml += `    <tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+        xml += `    <tipler adi="${typeof tip.adi === 'boolean' ? tip.adi : (tip.adi || '')}" aciklama="${typeof tip.aciklama === 'boolean' ? tip.aciklama : (tip.aciklama || '')}" kod="${typeof tip.kod === 'boolean' ? tip.kod : (tip.kod || '')}">\n`;
         tip.degerler.forEach((deger, i) => {
-          xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
+          xml += `      <degerler nodeList="${typeof deger.nodeList === 'boolean' ? deger.nodeList : (deger.nodeList || '')}" intValue="${i+1}"/>\n`;
         });
         xml += `    </tipler>\n`;
       });
@@ -1004,61 +1004,62 @@ function generateHierarchicalXML() {
 
   // Proje açılışı
   xml += `<arayuz:Proje`;
-  Object.entries(hierarchicalData.proje).forEach(([k, v]) => { 
-    xml += ` ${k}="${v || ''}"`; 
+  hierarchy.proje.fields.forEach(field => {
+    const v = hierarchicalData.proje[field.key];
+    xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
   });
   xml += '>';
 
   // Bilesen açılışı
   xml += `\n${indent(2)}<Bilesen`;
-  Object.entries(hierarchicalData.bilesen).forEach(([k, v]) => { 
-    xml += ` ${k}="${v || ''}"`; 
+  hierarchy.bilesen.fields.forEach(field => {
+    const v = hierarchicalData.bilesen[field.key];
+    xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
   });
   xml += '>';
 
   // Arayuz açılışı
   xml += `\n${indent(4)}<Arayuz`;
-  Object.entries(hierarchicalData.arayuz).forEach(([k, v]) => { 
-    xml += ` ${k}="${v || ''}"`; 
+  hierarchy.arayuz.fields.forEach(field => {
+    const v = hierarchicalData.arayuz[field.key];
+    xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
   });
   xml += '>';
 
   // Servis açılışı
   xml += `\n${indent(6)}<Servis`;
-  Object.entries(hierarchicalData.servis).forEach(([k, v]) => { 
-    xml += ` ${k}="${v || ''}"`; 
+  hierarchy.servis.fields.forEach(field => {
+    const v = hierarchicalData.servis[field.key];
+    xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
   });
   xml += '>';
 
   // Mesajlar + Parametreler
   if (hierarchicalData.mesaj.messages.length > 0) {
     hierarchicalData.mesaj.messages.forEach(msg => {
-      // Mesajın herhangi bir attribute'u boş değil mi kontrol et
       const msgFilled = Object.values(msg).some(v => v !== undefined && v !== '' && v !== null && typeof v !== 'object');
       if (msgFilled) {
         xml += `\n${indent(8)}<Mesaj`;
         hierarchy.mesaj.messageFields.forEach(field => {
-          xml += ` ${field.key}="${msg[field.key] || ''}"`;
+          const v = msg[field.key];
+          xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
         });
-
         // Parametre var mı kontrolü
         const hasParam = Array.isArray(msg.param) && msg.param.some(param => Object.values(param).some(v => v !== undefined && v !== ''));
         if (hasParam) {
-          xml += '>'; // Açılış kapanıyor, parametreler altına yazılacak
-
+          xml += '>';
           msg.param.forEach(param => {
             if (param && Object.values(param).some(v => v !== undefined && v !== '')) {
               xml += `\n${indent(10)}<Parametre`;
               hierarchy.mesaj.paramFields.forEach(field => {
-                xml += ` ${field.key}="${param[field.key] || ''}"`;
+                const v = param[field.key];
+                xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
               });
               xml += '/>';
             }
           });
-
-          xml += `\n${indent(8)}</Mesaj>`; // Mesaj kapanışı
+          xml += `\n${indent(8)}</Mesaj>`;
         } else {
-          // Parametre yok, tek satırda kapanış
           xml += '> </Mesaj>';
         }
       }
@@ -1069,11 +1070,11 @@ function generateHierarchicalXML() {
   const headerFilled = Object.values(hierarchicalData.mesaj.header).some(v => v !== undefined && v !== '');
   if (headerFilled) {
     xml += `\n${indent(8)}<Header`;
-    Object.entries(hierarchicalData.mesaj.header).forEach(([k, v]) => { 
-      xml += ` ${k}="${v || ''}"`; 
+    hierarchy.mesaj.header.forEach(field => {
+      const v = hierarchicalData.mesaj.header[field.key];
+      xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
     });
     xml += '>';
-
     // HeaderParametreler
     if (Array.isArray(hierarchicalData.mesaj.headerparametre) && hierarchicalData.mesaj.headerparametre.length > 0) {
       hierarchicalData.mesaj.headerparametre.forEach(param => {
@@ -1081,13 +1082,13 @@ function generateHierarchicalXML() {
         if (filled) {
           xml += `\n${indent(10)}<HeaderParametre`;
           hierarchy.mesaj.headerParamFields.forEach(field => {
-            xml += ` ${field.key}="${param[field.key] || ''}"`;
+            const v = param[field.key];
+            xml += ` ${field.key}="${field.type === 'boolean' ? (v === true ? 'true' : 'false') : (v || '')}"`;
           });
           xml += '/>';
         }
       });
     }
-
     xml += `\n${indent(8)}</Header>`;
   }
 
@@ -1100,18 +1101,16 @@ function generateHierarchicalXML() {
     xml += `\n${indent(2)}<TiplerPaketi>\n`;
     // SABİT TİPLER
     SABIT_TIPLER.forEach((tip) => {
-      xml += `${indent(4)}<tipler isim="${tip}"/>\n`;
+      xml += `${indent(4)}<tipler isim="${typeof tip === 'boolean' ? tip : (tip || '')}"/>\n`;
     });
     // DİNAMİK TİPLER
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip) => {
-        if (tip.xmlGoster) {
-          xml += `${indent(4)}<tipler adi="arayuz:${tip.adi || ''}" aciklama="${tip.aciklama || ''}" kod="${tip.kod || ''}">\n`;
-          tip.degerler.forEach((deger, i) => {
-            xml += `${indent(6)}<degerler nodeList="${deger.nodeList || ''}" intValue="${i + 1}"/>\n`;
-          });
-          xml += `${indent(4)}</tipler>\n`;
-        }
+        xml += `${indent(4)}<tipler adi="arayuz:${tip.adi || ''}" aciklama="${tip.aciklama || ''}" kod="${tip.kod || ''}">\n`;
+        tip.degerler.forEach((deger, i) => {
+          xml += `${indent(6)}<degerler nodeList="${deger.nodeList || ''}" intValue="${i + 1}"/>\n`;
+        });
+        xml += `${indent(4)}</tipler>\n`;
       });
     }
     xml += `${indent(2)}</TiplerPaketi>\n`;
@@ -1186,20 +1185,6 @@ function tipEkleEkraniOlustur() {
   degerEkleBtn.style = 'background:red;color:white;padding:8px 18px;border:none;border-radius:6px;font-weight:bold;display:block;margin:0 auto 16px auto;';
   tipBox.appendChild(degerEkleBtn);
 
-  // Checkbox ekle
-  const xmlGosterDiv = document.createElement('div');
-  xmlGosterDiv.style = 'display:flex;align-items:center;gap:8px;justify-content:center;margin:12px 0;';
-  const xmlGosterCheckbox = document.createElement('input');
-  xmlGosterCheckbox.type = 'checkbox';
-  xmlGosterCheckbox.id = 'tipXmlGosterCheckbox';
-  xmlGosterCheckbox.checked = true;
-  const xmlGosterLabel = document.createElement('label');
-  xmlGosterLabel.textContent = "XML'de göster";
-  xmlGosterLabel.htmlFor = 'tipXmlGosterCheckbox';
-  xmlGosterDiv.appendChild(xmlGosterCheckbox);
-  xmlGosterDiv.appendChild(xmlGosterLabel);
-  tipBox.appendChild(xmlGosterDiv);
-
   // Kaydet/İptal butonları
   const btnBox = document.createElement('div');
   btnBox.style = 'display:flex;gap:16px;justify-content:center;margin-top:16px;';
@@ -1263,7 +1248,6 @@ function tipEkleEkraniOlustur() {
     const adi = document.getElementById('tipAdiInput').value.trim();
     const aciklama = document.getElementById('tipAciklamaInput').value.trim();
     const kod = document.getElementById('tipKodInput').value.trim();
-    const xmlGoster = document.getElementById('tipXmlGosterCheckbox').checked;
     // Alan kontrolü
     if (!adi || !aciklama || !kod) {
       alert('Lütfen tüm alanları doldurun!');
@@ -1286,8 +1270,7 @@ function tipEkleEkraniOlustur() {
       adi,
       aciklama,
       kod,
-      degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList })),
-      xmlGoster
+      degerler: degerler.map((d, i) => ({ intValue: i+1, nodeList: d.nodeList }))
     });
     // Menüdeki tip listesini güncelle
     guncelleTiplerMenusu();
