@@ -284,7 +284,7 @@ function renderStep() {
           // Sabit tipler
           SABIT_TIPLER.forEach((tip, idx) => {
             const option = document.createElement('option');
-            option.value = `//@TiplersPaketi/@tiplers.${idx}`;
+            option.value = `//@TiplerPaketi/@tipler.${idx}`;
             option.textContent = tip;
             select.appendChild(option);
           });
@@ -292,7 +292,7 @@ function renderStep() {
           if (formData.tiplers && formData.tiplers.length > 0) {
             formData.tiplers.forEach((tip, idx) => {
               const option = document.createElement('option');
-              option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
+              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
               option.textContent = tip.adi;
               select.appendChild(option);
             });
@@ -481,20 +481,20 @@ function generateFullXML() {
   xml += '/>';
   // Tipler
   if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
-    xml += `\n  <TiplersPaketi>\n`;
+    xml += `\n  <TiplerPaketi>\n`;
     SABIT_TIPLER.forEach((tip, idx) => {
-      xml += `    <tiplers isim="${tip}"/>\n`;
+      xml += `    <tipler isim="${tip}"/>\n`;
     });
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip, idx) => {
-        xml += `    <tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+        xml += `    <tipler adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
         tip.degerler.forEach((deger, i) => {
           xml += `      <degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
         });
-        xml += `    </tiplers>\n`;
+        xml += `    </tipler>\n`;
       });
     }
-    xml += `  </TiplersPaketi>\n`;
+    xml += `  </TiplerPaketi>\n`;
   }
   // Kapanış tagları
   xml += `</Proje>\n`;
@@ -581,12 +581,17 @@ const hierarchy = {
 
 let currentKey = 'proje';
 let hierarchicalData = {
-  proje: {},
-  bilesen: {},
-  arayuz: {},
-  servis: {},
-  mesaj: { header: {}, headerparametre: [], messages: [] }
+  proje: { a: "", b: "", c: "", d: "", e: "", f: "" },
+  bilesen: { a: "" },
+  arayuz: { a: "", b: "" },
+  servis: { a: "", b: "", c: "", d: "" },
+  mesaj: {
+    header: { a: "", b: "", c: "" },
+    headerparametre: [],   // parametreler array, boş olabilir
+    messages: []           // mesajlar array, boş olabilir
+  }
 };
+
 
 function renderHierarchicalInput(key) {
   currentKey = key;
@@ -793,7 +798,7 @@ function renderHierarchicalInput(key) {
           // Sabit tipler
           SABIT_TIPLER.forEach((tip, idx) => {
             const option = document.createElement('option');
-            option.value = `//@TiplersPaketi/@tiplers.${idx}`;
+            option.value = `//@TiplerPaketi/@tipler.${idx}`;
             option.textContent = tip;
             select.appendChild(option);
           });
@@ -801,7 +806,7 @@ function renderHierarchicalInput(key) {
           if (formData.tiplers && formData.tiplers.length > 0) {
             formData.tiplers.forEach((tip, idx) => {
               const option = document.createElement('option');
-              option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
+              option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
               option.textContent = tip.adi;
               select.appendChild(option);
             });
@@ -867,7 +872,7 @@ function renderHierarchicalInput(key) {
       // SABİT TİPLER
       SABIT_TIPLER.forEach((tip, idx) => {
         const option = document.createElement('option');
-        option.value = `//@TiplersPaketi/@tiplers.${idx}`;
+        option.value = `//@TiplerPaketi/@tipler.${idx}`;
         option.textContent = tip;
         select.appendChild(option);
       });
@@ -876,7 +881,7 @@ function renderHierarchicalInput(key) {
       if (formData.tiplers && formData.tiplers.length > 0) {
         formData.tiplers.forEach((tip, idx) => {
           const option = document.createElement('option');
-          option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
+          option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
           option.textContent = tip.adi;
           select.appendChild(option);
         });
@@ -990,7 +995,6 @@ function renderHierarchicalInput(key) {
 
   scrollContainer.appendChild(navBox);
 }
-
 function generateHierarchicalXML() {
   // Girinti için fonksiyon
   function indent(level) { return ' '.repeat(level); }
@@ -998,32 +1002,41 @@ function generateHierarchicalXML() {
   let xml = '';
   // Proje açılışı
   xml += `<Proje`;
-  Object.entries(hierarchicalData.proje).forEach(([k, v]) => { if (v) xml += ` ${k}="${v}"`; });
+  Object.entries(hierarchicalData.proje).forEach(([k, v]) => { 
+    xml += ` ${k}="${v || ''}"`; 
+  });
   xml += '>';
 
   // Bilesen açılışı
   xml += `\n${indent(2)}<Bilesen`;
-  Object.entries(hierarchicalData.bilesen).forEach(([k, v]) => { if (v) xml += ` ${k}="${v}"`; });
+  Object.entries(hierarchicalData.bilesen).forEach(([k, v]) => { 
+    xml += ` ${k}="${v || ''}"`; 
+  });
   xml += '>';
 
   // Arayuz açılışı
   xml += `\n${indent(4)}<Arayuz`;
-  Object.entries(hierarchicalData.arayuz).forEach(([k, v]) => { if (v) xml += ` ${k}="${v}"`; });
+  Object.entries(hierarchicalData.arayuz).forEach(([k, v]) => { 
+    xml += ` ${k}="${v || ''}"`; 
+  });
   xml += '>';
 
   // Servis açılışı
   xml += `\n${indent(6)}<Servis`;
-  Object.entries(hierarchicalData.servis).forEach(([k, v]) => { if (v) xml += ` ${k}="${v}"`; });
+  Object.entries(hierarchicalData.servis).forEach(([k, v]) => { 
+    xml += ` ${k}="${v || ''}"`; 
+  });
   xml += '>';
 
   // Mesajlar + Parametreler
   if (hierarchicalData.mesaj.messages.length > 0) {
     hierarchicalData.mesaj.messages.forEach(msg => {
+      // Mesajın herhangi bir attribute'u boş değil mi kontrol et
       const msgFilled = Object.values(msg).some(v => v !== undefined && v !== '' && v !== null && typeof v !== 'object');
       if (msgFilled) {
         xml += `\n${indent(8)}<Mesaj`;
         hierarchy.mesaj.messageFields.forEach(field => {
-          if (msg[field.key]) xml += ` ${field.key}="${msg[field.key]}"`;
+          xml += ` ${field.key}="${msg[field.key] || ''}"`;
         });
 
         // Parametre var mı kontrolü
@@ -1035,7 +1048,7 @@ function generateHierarchicalXML() {
             if (param && Object.values(param).some(v => v !== undefined && v !== '')) {
               xml += `\n${indent(10)}<Parametre`;
               hierarchy.mesaj.paramFields.forEach(field => {
-                if (param[field.key]) xml += ` ${field.key}="${param[field.key]}"`;
+                xml += ` ${field.key}="${param[field.key] || ''}"`;
               });
               xml += '/>';
             }
@@ -1054,7 +1067,9 @@ function generateHierarchicalXML() {
   const headerFilled = Object.values(hierarchicalData.mesaj.header).some(v => v !== undefined && v !== '');
   if (headerFilled) {
     xml += `\n${indent(8)}<Header`;
-    Object.entries(hierarchicalData.mesaj.header).forEach(([k, v]) => { if (v !== undefined && v !== '') xml += ` ${k}="${v}"`; });
+    Object.entries(hierarchicalData.mesaj.header).forEach(([k, v]) => { 
+      xml += ` ${k}="${v || ''}"`; 
+    });
     xml += '>';
 
     // HeaderParametreler
@@ -1064,7 +1079,7 @@ function generateHierarchicalXML() {
         if (filled) {
           xml += `\n${indent(10)}<HeaderParametre`;
           hierarchy.mesaj.headerParamFields.forEach(field => {
-            if (param[field.key]) xml += ` ${field.key}="${param[field.key]}"`;
+            xml += ` ${field.key}="${param[field.key] || ''}"`;
           });
           xml += '/>';
         }
@@ -1080,24 +1095,24 @@ function generateHierarchicalXML() {
 
   // TIPLER bölümü eklendi
   if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0) {
-    xml += `\n${indent(2)}<TiplersPaketi>\n`;
+    xml += `\n${indent(2)}<TiplerPaketi>\n`;
     // SABİT TİPLER
-    SABIT_TIPLER.forEach((tip, idx) => {
-      xml += `${indent(4)}<tiplers isim="${tip}"/>\n`;
+    SABIT_TIPLER.forEach((tip) => {
+      xml += `${indent(4)}<tipler isim="${tip}"/>\n`;
     });
     // DİNAMİK TİPLER
     if (formData.tiplers && formData.tiplers.length > 0) {
-      formData.tiplers.forEach((tip, idx) => {
+      formData.tiplers.forEach((tip) => {
         if (tip.xmlGoster) {
-          xml += `${indent(4)}<tiplers adi="${tip.adi}" aciklama="${tip.aciklama}" kod="${tip.kod}">\n`;
+          xml += `${indent(4)}<tipler adi="${tip.adi || ''}" aciklama="${tip.aciklama || ''}" kod="${tip.kod || ''}">\n`;
           tip.degerler.forEach((deger, i) => {
-            xml += `${indent(6)}<degerler nodeList="${deger.nodeList}" intValue="${i+1}"/>\n`;
+            xml += `${indent(6)}<degerler nodeList="${deger.nodeList || ''}" intValue="${i + 1}"/>\n`;
           });
-          xml += `${indent(4)}</tiplers>\n`;
+          xml += `${indent(4)}</tipler>\n`;
         }
       });
     }
-    xml += `${indent(2)}</TiplersPaketi>\n`;
+    xml += `${indent(2)}</TiplerPaketi>\n`;
   }
 
   // Kapanış tagları
@@ -1330,9 +1345,10 @@ function guncelleTiplerMenusu() {
       tipSatir.textContent = tip.adi || '-';
       tipSatir.style.borderBottom = '2px solid red';
       tipSatir.style.width = 'fit-content';
-
-      tipSatir.style.padding = '2px 0 4px 0';
-      tipSatir.style.fontSize = '14px';
+      tipSatir.style.backgroundColor = 'red';
+      tipSatir.style.color='white';
+      tipSatir.style.padding = '2px 4px 4px 4px';
+      tipSatir.style.fontSize = '15px';
       tipSatir.style.fontWeight = 'bold';
       tipListesi.appendChild(tipSatir);
     });
