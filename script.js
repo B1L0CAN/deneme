@@ -999,7 +999,9 @@ function generateHierarchicalXML() {
   // Girinti için fonksiyon
   function indent(level) { return ' '.repeat(level); }
 
-  let xml = '';
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+
+
   // Proje açılışı
   xml += `<arayuz:Proje`;
   Object.entries(hierarchicalData.proje).forEach(([k, v]) => { 
