@@ -841,51 +841,93 @@ function renderHierarchicalInput(key) {
       });
       // Parametreler (çoklu)
       if (!Array.isArray(msg.param)) msg.param = [];
-      msg.param.forEach((param, pidx) => {
-        const paramBox = document.createElement('div');
-        paramBox.className = 'output-box';
-        const paramTitle = document.createElement('div');
-        paramTitle.className = 'output-title';
-        paramTitle.textContent = `Parametre #${pidx + 1}`;
-        paramBox.appendChild(paramTitle);
-        node.paramFields.forEach(field => {
-          const label = document.createElement('label');
-          label.className = 'output-title';
-          label.textContent = field.label;
-          const input = document.createElement('input');
-          if (field.type === 'int') {
-            input.type = 'number';
-            input.value = param[field.key] || '';
-            input.oninput = (e) => {
-              param[field.key] = parseInt(e.target.value) || 0;
-            };
-          } else if (field.type === 'boolean') {
-            input.type = 'checkbox';
-            input.checked = !!param[field.key];
-            input.onchange = (e) => {
-              param[field.key] = e.target.checked;
-            };
-          } else {
-            input.type = 'text';
-            input.value = param[field.key] || '';
-            input.oninput = (e) => {
-              param[field.key] = e.target.value;
-            };
-          }
-          input.style.margin = '0 auto';
-          label.appendChild(input);
-          paramBox.appendChild(label);
-        });
-        // Sil butonu
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Sil';
-        removeBtn.onclick = () => {
-          msg.param.splice(pidx, 1);
-          renderHierarchicalInput('mesaj');
-        };
-        paramBox.appendChild(removeBtn);
-        msgBox.appendChild(paramBox);
+     msg.param.forEach((param, pidx) => {
+  const paramBox = document.createElement('div');
+  const paramTitle = document.createElement('div');
+  paramTitle.className = 'output-title';
+  paramTitle.textContent = `Parametre #${pidx + 1}`;
+  paramBox.appendChild(paramTitle);
+
+  node.paramFields.forEach((field, fieldIdx) => {
+    const label = document.createElement('label');
+    label.className = 'output-title';
+    label.textContent = field.label;
+    label.style.display = 'flex';
+    label.style.flexDirection = 'column';
+    label.style.alignItems = 'center';
+    label.style.width = '100%';
+
+    if (fieldIdx === 0) {
+      // İlk alan için combobox
+      const select = document.createElement('select');
+      select.style.padding = '4px 8px';
+      select.style.borderRadius = '4px';
+      select.style.minWidth = '180px';
+
+      // SABİT TİPLER
+      SABIT_TIPLER.forEach((tip, idx) => {
+        const option = document.createElement('option');
+        option.value = `//@TiplersPaketi/@tiplers.${idx}`;
+        option.textContent = tip;
+        select.appendChild(option);
       });
+
+      // DİNAMİK TİPLER
+      if (formData.tiplers && formData.tiplers.length > 0) {
+        formData.tiplers.forEach((tip, idx) => {
+          const option = document.createElement('option');
+          option.value = `//@TiplersPaketi/@tiplers.${SABIT_TIPLER.length + idx}`;
+          option.textContent = tip.adi;
+          select.appendChild(option);
+        });
+      }
+
+      // Seçili değer
+      select.value = param[field.key] || '';
+      select.onchange = (e) => {
+        param[field.key] = e.target.value;
+      };
+      select.style.margin = '0 auto';
+      label.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      if (field.type === 'int') {
+        input.type = 'number';
+        input.value = param[field.key] || '';
+        input.oninput = (e) => {
+          param[field.key] = parseInt(e.target.value) || 0;
+        };
+      } else if (field.type === 'boolean') {
+        input.type = 'checkbox';
+        input.checked = !!param[field.key];
+        input.onchange = (e) => {
+          param[field.key] = e.target.checked;
+        };
+      } else {
+        input.type = 'text';
+        input.value = param[field.key] || '';
+        input.oninput = (e) => {
+          param[field.key] = e.target.value;
+        };
+      }
+      input.style.margin = '0 auto';
+      label.appendChild(input);
+    }
+
+    paramBox.appendChild(label);
+  });
+
+  // Sil butonu
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Sil';
+  removeBtn.onclick = () => {
+    msg.param.splice(pidx, 1);
+    renderHierarchicalInput('mesaj');
+  };
+  paramBox.appendChild(removeBtn);
+  msgBox.appendChild(paramBox);
+});
+
       // + Parametre Ekle butonu
       if (msg.param.length < 10) {
         const addBtn = document.createElement('button');
@@ -1287,6 +1329,8 @@ function guncelleTiplerMenusu() {
       const tipSatir = document.createElement('div');
       tipSatir.textContent = tip.adi || '-';
       tipSatir.style.borderBottom = '2px solid red';
+      tipSatir.style.width = 'fit-content';
+
       tipSatir.style.padding = '2px 0 4px 0';
       tipSatir.style.fontSize = '14px';
       tipSatir.style.fontWeight = 'bold';
@@ -1305,4 +1349,3 @@ function guncelleTiplerMenusu() {
 // tipEkleEkraniOlustur ve ilgili yerlere guncelleTiplerMenusu() ekle
 // Ayrıca sayfa yüklenince de çağır
 window.addEventListener('DOMContentLoaded', guncelleTiplerMenusu);
-
