@@ -501,7 +501,7 @@ function generateFullXML() {
     });
     if (formData.tiplers && formData.tiplers.length > 0) {
       formData.tiplers.forEach((tip, idx) => {
-        xml += `    <tipler adi="${typeof tip.adi === 'boolean' ? tip.adi : (tip.adi || '')}" aciklama="${typeof tip.aciklama === 'boolean' ? tip.aciklama : (tip.aciklama || '')}" kod="${typeof tip.kod === 'boolean' ? tip.kod : (tip.kod || '')}">\n`;
+        xml += `    <tipler adi="arayuz:${typeof tip.adi === 'boolean' ? tip.adi : (tip.adi || '')}" aciklama="${typeof tip.aciklama === 'boolean' ? tip.aciklama : (tip.aciklama || '')}" kod="${typeof tip.kod === 'boolean' ? tip.kod : (tip.kod || '')}">\n`;
         tip.degerler.forEach((deger, i) => {
           xml += `      <degerler nodeList="${typeof deger.nodeList === 'boolean' ? deger.nodeList : (deger.nodeList || '')}" intValue="${i+1}"/>\n`;
         });
@@ -1132,7 +1132,7 @@ if ((formData.tiplers && formData.tiplers.length > 0) || SABIT_TIPLER.length > 0
   // STRUKTÜR
   if (formData.structs && formData.structs.length > 0) {
     formData.structs.forEach((struct) => {
-      xml += `${indent(4)}<tipler adi="${struct.adi || ''}" aciklama="${struct.aciklama || ''}" kod="${struct.kod || ''}">\n`;  // Kod burada da ekleniyor
+      xml += `${indent(4)}<tipler adi="arayuz:${struct.adi || ''}" aciklama="${struct.aciklama || ''}" kod="${struct.kod || ''}">\n`;  // Kod burada da ekleniyor
       struct.alanlar.forEach((alan) => {
         xml += `${indent(6)}<deger adi="${alan.adi || ''}" tip="${alan.tip || ''}"/>\n`;
       });
@@ -1167,7 +1167,7 @@ function tipEkleEkraniOlustur() {
   title.style.textAlign = 'center';
   title.style.fontWeight = 'bold';
   title.style.fontSize = '1.5em';
-  title.style.color = 'red';
+  title.style.color = '#b00';
   title.style.marginBottom = '16px';
   tipBox.appendChild(title);
 
@@ -1191,7 +1191,7 @@ function tipEkleEkraniOlustur() {
 
   const degerlerTitle = document.createElement('div');
   degerlerTitle.textContent = 'Değerler';
-  degerlerTitle.style = 'text-align:center;font-weight:bold;color:red;margin:16px 0 8px 0;';
+  degerlerTitle.style = 'text-align:center;font-weight:bold;color:#b00;margin:16px 0 8px 0;';
   tipBox.appendChild(degerlerTitle);
 
   const degerlerContainer = document.createElement('div');
@@ -1340,10 +1340,10 @@ function structEkleEkraniOlustur() {
   title.style.textAlign = 'center';
   title.style.fontWeight = 'bold';
   title.style.fontSize = '1.5em';
-  title.style.color = 'red';   title.style.marginBottom = '16px';
+  title.style.color = '#b00';   title.style.marginBottom = '16px';
   structBox.appendChild(title);
 
-  const labelStyle = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;justify-content:center;font-weight:bold;color:red;';
+  const labelStyle = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;justify-content:center;font-weight:bold;color:#b00;';
   const inputStyle = 'padding:4px 8px;border-radius:4px;border:1px solid #aaa;min-width:180px;';
 
   // Struct Adı
@@ -1367,7 +1367,7 @@ function structEkleEkraniOlustur() {
   // Alanlar başlığı
   const alanlarTitle = document.createElement('div');
   alanlarTitle.textContent = 'Alanlar';
-  alanlarTitle.style = 'text-align:center;font-weight:bold;color:red;margin:16px 0 8px 0;';
+  alanlarTitle.style = 'text-align:center;font-weight:bold;color:#b00;margin:16px 0 8px 0;';
   structBox.appendChild(alanlarTitle);
 
   // Alanlar container
@@ -1554,5 +1554,3 @@ window.addEventListener('DOMContentLoaded', () => {
     btnStructEkle.addEventListener('click', structEkleEkraniOlustur);
   }
 });
-
-
