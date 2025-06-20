@@ -203,7 +203,6 @@ function renderStep() {
   title.textContent = step.label;
   scrollContainer.appendChild(title);
 
-  // Proje, Bileşen, Arayüz, Parametre için inputlar
   if (step.fields) {
     step.fields.forEach(field => {
       const box = document.createElement('div');
@@ -229,9 +228,7 @@ function renderStep() {
     });
   }
 
-  // Mesajlar için özel alan
   if (step.key === 'mesaj') {
-    // Header
     const headerBox = document.createElement('div');
     headerBox.className = 'output-box';
     const headerTitle = document.createElement('div');
@@ -268,7 +265,6 @@ function renderStep() {
     });
     scrollContainer.appendChild(headerBox);
 
-    // Mesajlar
     const messagesTitle = document.createElement('div');
     messagesTitle.className = 'output-title';
     messagesTitle.textContent = 'Mesajlar';
@@ -281,6 +277,7 @@ function renderStep() {
       msgLabel.className = 'output-title';
       msgLabel.textContent = `Mesaj #${idx + 1}`;
       msgBox.appendChild(msgLabel);
+
       step.messageFields.forEach((field, fieldIdx) => {
         const label = document.createElement('label');
         label.className = 'output-title';
@@ -289,20 +286,20 @@ function renderStep() {
         label.style.flexDirection = 'column';
         label.style.alignItems = 'center';
         label.style.width = '100%';
-        // Sadece ilk alan (a) için combobox, diğerleri için input
+
         if (fieldIdx === 0) {
           const select = document.createElement('select');
           select.style.padding = '4px 8px';
           select.style.borderRadius = '4px';
           select.style.minWidth = '180px';
-          // Sabit tipler
+
           SABIT_TIPLER.forEach((tip, idx) => {
             const option = document.createElement('option');
             option.value = `//@TiplerPaketi/@tipler.${idx}`;
             option.textContent = tip;
             select.appendChild(option);
           });
-          // Dinamik tipler
+
           if (formData.tiplers && formData.tiplers.length > 0) {
             formData.tiplers.forEach((tip, idx) => {
               const option = document.createElement('option');
@@ -311,19 +308,21 @@ function renderStep() {
               select.appendChild(option);
             });
           }
-if (formData.structs && formData.structs.length > 0) {
-  formData.structs.forEach((struct, idx) => {
-    const option = document.createElement('option');
-    option.value = `arayuz:${struct.adi}`;
-    option.textContent = struct.adi;
-    select.appendChild(option);
-  });
-}
-          // Seçili değer
+
+          if (formData.structs && formData.structs.length > 0) {
+            formData.structs.forEach((struct, idx) => {
+              const option = document.createElement('option');
+              option.value = `arayuz:${struct.adi}`;
+              option.textContent = struct.adi;
+              select.appendChild(option);
+            });
+          }
+
           select.value = msg[field.key] || '';
           select.onchange = (e) => {
             msg[field.key] = e.target.value;
           };
+
           select.style.margin = '0 auto';
           label.appendChild(select);
         } else {
@@ -352,11 +351,14 @@ if (formData.structs && formData.structs.length > 0) {
         }
         msgBox.appendChild(label);
       });
-      // Parametreler
-      const paramTitle = document.createElement('div');
-      paramTitle.className = 'output-title';
-      paramTitle.textContent = 'Parametre';
-      msgBox.appendChild(paramTitle);
+
+      const paramContainer = document.createElement('div');
+      paramContainer.className = 'param-container';
+      const paramTitleElement = document.createElement('div');
+      paramTitleElement.className = 'output-title';
+      paramTitleElement.textContent = 'Parametre';
+      paramContainer.appendChild(paramTitleElement);
+
       if (!msg.param) msg.param = {};
       step.paramFields.forEach(field => {
         const label = document.createElement('label');
@@ -366,31 +368,50 @@ if (formData.structs && formData.structs.length > 0) {
         label.style.flexDirection = 'column';
         label.style.alignItems = 'center';
         label.style.width = '100%';
-        const input = document.createElement('input');
-        if (field.type === 'int') {
-          input.type = 'number';
-          input.value = msg.param[field.key] || '';
-          input.oninput = (e) => {
-            msg.param[field.key] = parseInt(e.target.value) || 0;
-          };
-        } else if (field.type === 'boolean') {
-          input.type = 'checkbox';
-          input.checked = !!msg.param[field.key];
-          input.onchange = (e) => {
-            msg.param[field.key] = e.target.checked;
-          };
-        } else {
-          input.type = 'text';
-          input.value = msg.param[field.key] || '';
-          input.oninput = (e) => {
-            msg.param[field.key] = e.target.value;
-          };
+
+        const select = document.createElement('select');
+        select.style.padding = '4px 8px';
+        select.style.borderRadius = '4px';
+        select.style.minWidth = '180px';
+
+        SABIT_TIPLER.forEach((tip, idx) => {
+          const option = document.createElement('option');
+          option.value = `//@TiplerPaketi/@tipler.${idx}`;
+          option.textContent = tip;
+          select.appendChild(option);
+        });
+
+        if (formData.tiplers && formData.tiplers.length > 0) {
+          formData.tiplers.forEach((tip, idx) => {
+            const option = document.createElement('option');
+            option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + idx}`;
+            option.textContent = tip.adi;
+            select.appendChild(option);
+          });
         }
-        input.style.margin = '0 auto';
-        label.appendChild(input);
-        msgBox.appendChild(label);
+
+        if (formData.structs && formData.structs.length > 0) {
+          formData.structs.forEach((struct, idx) => {
+            const option = document.createElement('option');
+            option.value = `arayuz:${struct.adi}`;
+            option.textContent = struct.adi;
+            select.appendChild(option);
+          });
+        }
+
+        const currentValue = msg.param[field.key] || '';
+        select.value = currentValue;
+        select.onchange = (e) => {
+          msg.param[field.key] = e.target.value;
+        };
+
+        select.style.margin = '0 auto';
+        label.appendChild(select);
+        paramContainer.appendChild(label);
       });
-      // Sil butonu
+
+      msgBox.appendChild(paramContainer);
+
       const removeBtn = document.createElement('button');
       removeBtn.textContent = 'Sil';
       removeBtn.onclick = () => {
@@ -400,7 +421,7 @@ if (formData.structs && formData.structs.length > 0) {
       msgBox.appendChild(removeBtn);
       scrollContainer.appendChild(msgBox);
     });
-    // + butonu
+
     if (formData.mesaj.messages.length < 10) {
       const addBtn = document.createElement('button');
       addBtn.textContent = '+ Mesaj Ekle';
@@ -412,7 +433,6 @@ if (formData.structs && formData.structs.length > 0) {
     }
   }
 
-  // Adım butonları
   const navBox = document.createElement('div');
   navBox.style.marginTop = '24px';
   navBox.style.display = 'flex';
@@ -449,6 +469,7 @@ if (formData.structs && formData.structs.length > 0) {
   }
   scrollContainer.appendChild(navBox);
 }
+
 
 function generateFullXML() {
   // Proje
@@ -1466,7 +1487,7 @@ function renderAlanlar() {
     const alanInput = document.createElement('input');
     alanInput.type = 'text';
     alanInput.value = alan.adi || '';
-    alanInput.placeholder = 'Alan Adı';
+    alanInput.placeholder = 'Değeri';
     alanInput.style = inputStyle + 'width:120px;';
     alanInput.oninput = (e) => {
       alan.adi = e.target.value;
