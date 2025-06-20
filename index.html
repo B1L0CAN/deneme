@@ -53,16 +53,22 @@
           <span class="arrow" onclick="toggleMenu('submenuTipler', this)">▶</span>
           <button class="menu-button" data-action="tipler">Tipler Paketi</button>
         </div>
-        <div class="submenu" id="submenuTipler">
-        <!--   <div class="menu-item"><button class="menu-button" data-action="tipVoid">Void</button></div> 
-          <div class="menu-item"><button class="menu-button" data-action="tipInt">Int</button></div>
-          <div class="menu-item"><button class="menu-button" data-action="tipFloat">Float</button></div>
-          <div class="menu-item"><button class="menu-button" data-action="tipDouble">Double</button></div>
-          <div class="menu-item"><button class="menu-button" data-action="tipChar">Char</button></div>
-          <div class="menu-item"><button class="menu-button" data-action="tipString">String</button></div>
-          <div class="menu-item"><button class="menu-button" data-action="tipShort">Short</button></div>-->
-          <div class="menu-item"><button class="menu-button" data-action="tipEkle">Tip Ekle</button></div>
-        </div>
+        <table id="tiplerTablosu" border="1">
+          <thead>
+            <tr>
+              <th> <button class="menu-button" data-action="tipEkle">Tip Ekle</button></th>
+              <th> <button class="menu-button" data-action="structEkle">Struct Ekle</button></th>
+              <th> <button class="menu-button" data-action="listEkle">Liste Ekle</button></th>
+            </tr>
+          </thead>
+        <tbody>
+            <tr>
+              <td id="tiplerListesi"></td>
+              <td id="structlarListesi"></td>
+              <td id="listelerListesi"></td>
+            </tr>
+        </tbody>
+        </table>
       </div>
     </div>
     <div id="output-area" class="output-area-right">
@@ -74,3 +80,11 @@
 
 </body>
 </html>
+
+<!--   <div class="menu-item"><button class="menu-button" data-action="tipVoid">Void</button></div> 
+          <div class="menu-item"><button class="menu-button" data-action="tipInt">Int</button></div>
+          <div class="menu-item"><button class="menu-button" data-action="tipFloat">Float</button></div>
+          <div class="menu-item"><button class="menu-button" data-action="tipDouble">Double</button></div>
+          <div class="menu-item"><button class="menu-button" data-action="tipChar">Char</button></div>
+          <div class="menu-item"><button class="menu-button" data-action="tipString">String</button></div>
+          <div class="menu-item"><button class="menu-button" data-action="tipShort">Short</button></div>-->
