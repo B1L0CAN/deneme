@@ -311,6 +311,14 @@ function renderStep() {
               select.appendChild(option);
             });
           }
+if (formData.structs && formData.structs.length > 0) {
+  formData.structs.forEach((struct, idx) => {
+    const option = document.createElement('option');
+    option.value = `arayuz:${struct.adi}`;
+    option.textContent = struct.adi;
+    select.appendChild(option);
+  });
+}
           // Seçili değer
           select.value = msg[field.key] || '';
           select.onchange = (e) => {
@@ -825,6 +833,14 @@ function renderHierarchicalInput(key) {
               select.appendChild(option);
             });
           }
+if (formData.structs && formData.structs.length > 0) {
+  formData.structs.forEach((struct, idx) => {
+    const option = document.createElement('option');
+    option.value = `arayuz:${struct.adi}`;
+    option.textContent = struct.adi;
+    select.appendChild(option);
+  });
+}
           // Seçili değer
           select.value = msg[field.key] || '';
           select.onchange = (e) => {
@@ -1402,43 +1418,78 @@ function structEkleEkraniOlustur() {
 
   let alanlar = [];
 
-  function renderAlanlar() {
-    alanlarContainer.innerHTML = '';
-    alanlar.forEach((alan, idx) => {
-      const alanDiv = document.createElement('div');
-      alanDiv.style = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;justify-content:center;';
-      const alanInput = document.createElement('input');
-      alanInput.type = 'text';
-      alanInput.value = alan.adi || '';
-      alanInput.placeholder = 'Alan Adı';
-      alanInput.style = inputStyle + 'width:180px;';
-      alanInput.oninput = (e) => {
-        alan.adi = e.target.value;
-      };
+function renderAlanlar() {
+  alanlarContainer.innerHTML = '';
+  alanlar.forEach((alan, idx) => {
+    const alanDiv = document.createElement('div');
+    alanDiv.style = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;justify-content:center;';
 
-      const tipInput = document.createElement('input');
-      tipInput.type = 'text';
-      tipInput.value = alan.tip || '';
-      tipInput.placeholder = 'Tipi';
-      tipInput.style = inputStyle + 'width:120px;';
-      tipInput.oninput = (e) => {
-        alan.tip = e.target.value;
-      };
+    // === Tip (select) ===
+    const tipSelect = document.createElement('select');
+    tipSelect.style = inputStyle + 'width:180px;';
 
-      const silBtn = document.createElement('button');
-      silBtn.textContent = 'Sil';
-      silBtn.style = 'background:red;color:white;padding:4px 12px;border:none;border-radius:4px;font-weight:bold;';
-      silBtn.onclick = () => {
-        alanlar.splice(idx, 1);
-        renderAlanlar();
-      };
-
-      alanDiv.appendChild(alanInput);
-      alanDiv.appendChild(tipInput);
-      alanDiv.appendChild(silBtn);
-      alanlarContainer.appendChild(alanDiv);
+    // SABİT TİPLER
+    SABIT_TIPLER.forEach((tip, tidx) => {
+      const option = document.createElement('option');
+      option.value = `//@TiplerPaketi/@tipler.${tidx}`;
+      option.textContent = tip;
+      tipSelect.appendChild(option);
     });
-  }
+
+    // DİNAMİK TİPLER
+    if (formData.tiplers && formData.tiplers.length > 0) {
+      formData.tiplers.forEach((tip, didx) => {
+        const option = document.createElement('option');
+        option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + didx}`;
+        option.textContent = tip.adi;
+        tipSelect.appendChild(option);
+      });
+    }
+
+    // STRUCT TİPLERİ — struct adı da tip olarak eklensin
+    if (formData.structs && formData.structs.length > 0) {
+      formData.structs.forEach((struct, sidx) => {
+        const option = document.createElement('option');
+        option.value = `arayuz:${struct.adi}`;
+        option.textContent = struct.adi;
+        tipSelect.appendChild(option);
+      });
+    }
+
+    // Seçili değer
+    tipSelect.value = alan.tip || '';
+    tipSelect.onchange = (e) => {
+      alan.tip = e.target.value;
+    };
+
+    // === Alan Adı (text) ===
+    const alanInput = document.createElement('input');
+    alanInput.type = 'text';
+    alanInput.value = alan.adi || '';
+    alanInput.placeholder = 'Alan Adı';
+    alanInput.style = inputStyle + 'width:120px;';
+    alanInput.oninput = (e) => {
+      alan.adi = e.target.value;
+    };
+
+    // === Sil Butonu ===
+    const silBtn = document.createElement('button');
+    silBtn.textContent = 'Sil';
+    silBtn.style = 'background:red;color:white;padding:4px 12px;border:none;border-radius:4px;font-weight:bold;';
+    silBtn.onclick = () => {
+      alanlar.splice(idx, 1);
+      renderAlanlar();
+    };
+
+    // Sırayla ekle
+    alanDiv.appendChild(tipSelect);
+    alanDiv.appendChild(alanInput);
+    alanDiv.appendChild(silBtn);
+    alanlarContainer.appendChild(alanDiv);
+  });
+}
+
+
 
   alanEkleBtn.onclick = () => {
     alanlar.push({ adi: '', tip: '' });
