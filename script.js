@@ -1312,40 +1312,52 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // --- Menüde Tipler Listesi ---
 function guncelleTiplerMenusu() {
-  const submenuTipler = document.getElementById('submenuTipler');
-  if (!submenuTipler) return;
-  // Eski tip listesini kaldır
-  const eskiListe = document.getElementById('tiplerMenuListesi');
-  if (eskiListe) eskiListe.remove();
-  // Yeni tip listesi oluştur
+  // Tipler sütunu
+  const tiplerTd = document.getElementById('tiplerListesi');
+  tiplerTd.innerHTML = '';
   if (formData.tiplers && formData.tiplers.length > 0) {
-    const tipListesi = document.createElement('div');
-    tipListesi.id = 'tiplerMenuListesi';
-    tipListesi.style.margin = '8px 0 0 0';
-    tipListesi.style.display = 'flex';
-    tipListesi.style.flexDirection = 'column';
-    tipListesi.style.gap = '4px';
-    formData.tiplers.forEach((tip) => {
-      const tipSatir = document.createElement('div');
-      tipSatir.textContent = tip.adi || '-';
-      tipSatir.style.borderBottom = '2px solid red';
-      tipSatir.style.width = 'fit-content';
-      tipSatir.style.backgroundColor = 'red';
-      tipSatir.style.color='white';
-      tipSatir.style.padding = '2px 4px 4px 4px';
-      tipSatir.style.fontSize = '15px';
-      tipSatir.style.fontWeight = 'bold';
-      tipListesi.appendChild(tipSatir);
+    const ul = document.createElement('ul');
+    formData.tiplers.forEach(tip => {
+      const li = document.createElement('li');
+      li.textContent = tip.adi;
+      // En başa ekle
+      ul.insertBefore(li, ul.firstChild);
     });
-    // Tip Ekle butonunun hemen altına ekle
-    const tipEkleBtnMenu = submenuTipler.querySelector('button[data-action="tipEkle"]');
-    if (tipEkleBtnMenu && tipEkleBtnMenu.parentNode) {
-      tipEkleBtnMenu.parentNode.insertAdjacentElement('afterend', tipListesi);
-    } else {
-      submenuTipler.appendChild(tipListesi);
-    }
+    tiplerTd.appendChild(ul);
+  }
+
+  // Structlar sütunu
+  const structlarTd = document.getElementById('structlarListesi');
+  structlarTd.innerHTML = '';
+  if (formData.structs && formData.structs.length > 0) {
+    const ul = document.createElement('ul');
+    formData.structs.forEach(struct => {
+      const li = document.createElement('li');
+      li.textContent = struct.adi;
+      // En başa ekle
+      ul.insertBefore(li, ul.firstChild);
+    });
+    structlarTd.appendChild(ul);
+  }
+
+  // Listeler sütunu
+  const listelerTd = document.getElementById('listelerListesi');
+  listelerTd.innerHTML = '';
+  if (formData.lists && formData.lists.length > 0) {
+    const ul = document.createElement('ul');
+    formData.lists.forEach(list => {
+      const li = document.createElement('li');
+      li.textContent = list.adi;
+      // En başa ekle
+      ul.insertBefore(li, ul.firstChild);
+    });
+    listelerTd.appendChild(ul);
   }
 }
+
+
+
+
 // Tip eklendiğinde veya sayfa yüklendiğinde bu fonksiyonu çağır
 // tipEkleEkraniOlustur ve ilgili yerlere guncelleTiplerMenusu() ekle
 // Ayrıca sayfa yüklenince de çağır
