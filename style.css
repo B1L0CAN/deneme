@@ -216,3 +216,15 @@ button.secili {
   font-style: italic;
   vertical-align: middle;
 }
+
+#tiplerListesi ul,
+#structlarListesi ul,
+#listelerListesi ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; 
+}
