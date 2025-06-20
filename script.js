@@ -2518,7 +2518,6 @@ function tipEkleEkraniOlustur() {
   const outputContainer = document.getElementById('output-scroll-container');
   outputContainer.innerHTML = '';
 
-  // Ana kutu
   const tipBox = document.createElement('div');
   tipBox.style.border = '2px solid #222';
   tipBox.style.borderRadius = '12px';
@@ -2529,7 +2528,6 @@ function tipEkleEkraniOlustur() {
   tipBox.style.marginLeft = 'auto';
   tipBox.style.marginRight = 'auto';
 
-  // Başlık
   const title = document.createElement('div');
   title.textContent = 'Yeni Tip Ekle';
   title.style.textAlign = 'center';
@@ -2539,7 +2537,6 @@ function tipEkleEkraniOlustur() {
   title.style.marginBottom = '16px';
   tipBox.appendChild(title);
 
-  // 3 string input
   const labelStyle = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;justify-content:center;font-weight:bold;color:#b00;';
   const inputStyle = 'padding:4px 8px;border-radius:4px;border:1px solid #aaa;min-width:180px;';
 
@@ -2558,26 +2555,22 @@ function tipEkleEkraniOlustur() {
   kodDiv.innerHTML = 'Kod: <input type="text" id="tipKodInput" style="' + inputStyle + '" />';
   tipBox.appendChild(kodDiv);
 
-  // Değerler başlığı
   const degerlerTitle = document.createElement('div');
   degerlerTitle.textContent = 'Değerler';
   degerlerTitle.style = 'text-align:center;font-weight:bold;color:red;margin:16px 0 8px 0;';
   tipBox.appendChild(degerlerTitle);
 
-  // Değerler kutusu
   const degerlerContainer = document.createElement('div');
   degerlerContainer.id = 'degerlerContainer';
   degerlerContainer.style = 'margin-bottom:12px;';
   tipBox.appendChild(degerlerContainer);
 
-  // Değer ekle butonu
   const degerEkleBtn = document.createElement('button');
   degerEkleBtn.id = 'degerEkleBtn';
   degerEkleBtn.textContent = '+ Değer Ekle';
   degerEkleBtn.style = 'background:red;color:white;padding:8px 18px;border:none;border-radius:6px;font-weight:bold;display:block;margin:0 auto 16px auto;';
   tipBox.appendChild(degerEkleBtn);
 
-  // Kaydet/İptal butonları
   const btnBox = document.createElement('div');
   btnBox.style = 'display:flex;gap:16px;justify-content:center;margin-top:16px;';
   const kaydetBtn = document.createElement('button');
@@ -2594,8 +2587,6 @@ function tipEkleEkraniOlustur() {
 
   outputContainer.appendChild(tipBox);
 
-
-
   let degerler = [];
 
   function renderDegerler() {
@@ -2603,7 +2594,6 @@ function tipEkleEkraniOlustur() {
     degerler.forEach((deger, idx) => {
       const degerDiv = document.createElement('div');
       degerDiv.style = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;justify-content:center;';
-      // nodeList (string) önce
       const nodeListInput = document.createElement('input');
       nodeListInput.type = 'text';
       nodeListInput.value = deger.nodeList || '';
@@ -2612,13 +2602,11 @@ function tipEkleEkraniOlustur() {
       nodeListInput.oninput = (e) => {
         deger.nodeList = e.target.value;
       };
-      // intValue (otomatik artan, değiştirilemez) sonra
       const intValueInput = document.createElement('input');
       intValueInput.type = 'number';
       intValueInput.value = idx + 1;
       intValueInput.disabled = true;
       intValueInput.style = inputStyle + 'width:50px;text-align:center;';
-      // Sil butonu
       const silBtn = document.createElement('button');
       silBtn.textContent = 'Sil';
       silBtn.style = 'background:red;color:white;padding:4px 12px;border:none;border-radius:4px;font-weight:bold;';
@@ -2639,44 +2627,30 @@ function tipEkleEkraniOlustur() {
   };
 
   kaydetBtn.onclick = () => {
-  const adi = document.getElementById('structAdiInput').value.trim();
-  const aciklama = document.getElementById('structAciklamaInput').value.trim();
-  const kod = document.getElementById('structKodInput').value.trim();
+    const adi = document.getElementById('tipAdiInput').value.trim();
+    const aciklama = document.getElementById('tipAciklamaInput').value.trim();
+    const kod = document.getElementById('tipKodInput').value.trim();
 
-  if (!adi || !aciklama || !kod) {
-    alert('Lütfen tüm alanları doldurun!');
-    return;
-  }
-  if (alanlar.length === 0 || alanlar.some(a => !a.adi.trim() || !a.tip.trim())) {
-    alert('En az bir alan ekleyin ve tüm alanları doldurun!');
-    return;
-  }
+    if (!adi || !aciklama || !kod) {
+      alert('Lütfen tüm alanları doldurun!');
+      return;
+    }
+    if (degerler.length === 0 || degerler.some(a => !a.nodeList.trim())) {
+      alert('En az bir değer ekleyin ve tüm değerleri doldurun!');
+      return;
+    }
 
-  // Veri kopyalama
-  formData.proje = { ...hierarchicalData.proje };
-  formData.bilesen = { ...hierarchicalData.bilesen };
-  formData.arayuz = { ...hierarchicalData.arayuz };
-  formData.mesaj = JSON.parse(JSON.stringify(hierarchicalData.mesaj));
-  if (typeof hierarchicalData.parametre !== 'undefined') {
-    formData.parametre = { ...hierarchicalData.parametre };
-  }
+    if (!formData.tiplers) formData.tiplers = [];
+    formData.tiplers.push({
+      adi,
+      aciklama,
+      kod,
+      degerler: [...degerler]
+    });
 
-  // Diziler varsa yoksa oluştur
-  if (!formData.structs) formData.structs = [];
-  if (!formData.tipler) formData.tipler = [];
-
-  // Struct ekle
-  formData.structs.push({
-    adi,
-    aciklama,
-    kod,
-    alanlar: alanlar.map((a) => ({ adi: a.adi, tip: a.tip }))
-  });
-
-  guncelleTiplerMenusu();
-  outputContainer.innerHTML = '';
-};
-
+    guncelleTiplerMenusu();
+    outputContainer.innerHTML = '';
+  };
 
   iptalBtn.onclick = () => {
     outputContainer.innerHTML = '';
@@ -2684,6 +2658,7 @@ function tipEkleEkraniOlustur() {
 
   renderDegerler();
 }
+
 
 // Menüdeki Tip Ekle butonuna tıklanınca bu ekranı aç
 window.addEventListener('DOMContentLoaded', () => {
