@@ -174,7 +174,7 @@ let formData = {
     headerparametre: [],
     messages: []
   },
-  tiplerListesi: []
+  tiplerListesi: [] // Tipler, Structlar ve Listeler burada tutulacak
 };
 
 
@@ -725,6 +725,22 @@ function generateXML() {
     xml += `${indent(2)}</TiplerPaketi>\n`;
   }
 
+  // LISTELER bölümü - TiplerPaketi'nden sonra
+  const listeler = formData.tiplerListesi.filter(item => item.type === 'liste');
+  if (listeler.length > 0) {
+    xml += `\n${indent(2)}<ListelerPaketi>\n`;
+    listeler.forEach(liste => {
+        const uzunluk = liste.data.tur === 'Fixed List' ? liste.data.elemanlar.length : -1;
+        xml += `${indent(4)}<liste adi="${liste.data.adi || ''}" aciklama="${liste.data.aciklama || ''}" kod="${liste.data.kod || ''}" uzunluk="${uzunluk}">\n`;
+        liste.data.elemanlar.forEach(eleman => {
+            xml += `${indent(6)}<eleman tip="${eleman.tip || ''}" degeri="${eleman.degeri || ''}"/>\n`;
+        });
+        xml += `${indent(4)}</liste>\n`;
+    });
+    xml += `${indent(2)}</ListelerPaketi>\n`;
+  }
+
+
   xml += `</arayuz:Proje>\n`;
 
   return xml;
@@ -1152,11 +1168,318 @@ function structEkleEkraniOlustur() {
   renderAlanlar();
 }
 
+// Liste Ekleme Ekranı
+function listeEkleEkraniOlustur() {
+    const outputContainer = document.getElementById('output-scroll-container');
+    outputContainer.innerHTML = '';
+
+    const listBox = document.createElement('div');
+    listBox.style.border = '2px solid #222';
+    listBox.style.borderRadius = '12px';
+    listBox.style.padding = '24px';
+    listBox.style.margin = '24px 0';
+    listBox.style.background = '#fff';
+    listBox.style.maxWidth = '500px';
+    listBox.style.marginLeft = 'auto';
+    listBox.style.marginRight = 'auto';
+
+    const title = document.createElement('div');
+    title.textContent = 'Yeni Liste Ekle';
+    title.style.textAlign = 'center';
+    title.style.fontWeight = 'bold';
+    title.style.fontSize = '1.5em';
+    title.style.color = '#b00';
+    title.style.marginBottom = '16px';
+    listBox.appendChild(title);
+
+    const formGrid = document.createElement('div');
+    formGrid.style.display = 'grid';
+    formGrid.style.gridTemplateColumns = 'auto 1fr';
+    formGrid.style.gap = '8px 12px';
+    formGrid.style.alignItems = 'center';
+    formGrid.style.marginBottom = '16px';
+
+    const labelStyle = 'text-align: right; font-weight: bold; color: #b00;';
+    const inputStyle = 'padding:4px 8px; border-radius:4px; border:1px solid #aaa; min-width:180px;';
+
+    // Liste Türü (Bu bölümü yukarı taşıdık)
+    const turLabel = document.createElement('label');
+    turLabel.textContent = 'Liste Türü:';
+    turLabel.style = labelStyle;
+    const turSelect = document.createElement('select');
+    turSelect.id = 'listeTuruSelect';
+    turSelect.style = inputStyle;
+    ['Variable List', 'Fixed List'].forEach(tur => {
+        const option = document.createElement('option');
+        option.value = tur;
+        option.textContent = tur;
+        turSelect.appendChild(option);
+    });
+    formGrid.appendChild(turLabel);
+    formGrid.appendChild(turSelect);
+
+    // Liste Adı
+    const adiLabel = document.createElement('label');
+    adiLabel.textContent = 'Liste Adı:';
+    adiLabel.style = labelStyle;
+    const adiInput = document.createElement('input');
+    adiInput.type = 'text';
+    adiInput.id = 'listeAdiInput';
+    adiInput.style = inputStyle;
+    formGrid.appendChild(adiLabel);
+    formGrid.appendChild(adiInput);
+
+    // Açıklama
+    const aciklamaLabel = document.createElement('label');
+    aciklamaLabel.textContent = 'Açıklama:';
+    aciklamaLabel.style = labelStyle;
+    const aciklamaInput = document.createElement('input');
+    aciklamaInput.type = 'text';
+    aciklamaInput.id = 'listeAciklamaInput';
+    aciklamaInput.style = inputStyle;
+    formGrid.appendChild(aciklamaLabel);
+    formGrid.appendChild(aciklamaInput);
+
+    // Kod
+    const kodLabel = document.createElement('label');
+    kodLabel.textContent = 'Kod:';
+    kodLabel.style = labelStyle;
+    const kodInput = document.createElement('input');
+    kodInput.type = 'text';
+    kodInput.id = 'listeKodInput';
+    kodInput.style = inputStyle;
+    formGrid.appendChild(kodLabel);
+    formGrid.appendChild(kodInput);
+
+    listBox.appendChild(formGrid);
+
+    // Tür seçimine göre değişecek UI elemanları için bir container
+    const typeSpecificControlsContainer = document.createElement('div');
+    typeSpecificControlsContainer.style.textAlign = 'center';
+    typeSpecificControlsContainer.style.margin = '16px 0';
+    listBox.appendChild(typeSpecificControlsContainer);
+
+
+    const elemanlarTitle = document.createElement('div');
+    elemanlarTitle.textContent = 'Elemanlar';
+    elemanlarTitle.style = 'text-align:center;font-weight:bold;color:#b00;margin:16px 0 8px 0;';
+    listBox.appendChild(elemanlarTitle);
+
+    const elemanlarContainer = document.createElement('div');
+    elemanlarContainer.id = 'elemanlarContainer';
+    elemanlarContainer.style = 'margin-bottom:12px;';
+    listBox.appendChild(elemanlarContainer);
+
+    const btnBox = document.createElement('div');
+    btnBox.style = 'display:flex;gap:16px;justify-content:center;margin-top:16px;';
+    const kaydetBtn = document.createElement('button');
+    kaydetBtn.id = 'listeKaydetBtn';
+    kaydetBtn.textContent = 'Kaydet';
+    kaydetBtn.style = 'background:red;color:white;padding:8px 24px;border:none;border-radius:6px;font-weight:bold;';
+    const iptalBtn = document.createElement('button');
+    iptalBtn.id = 'listeIptalBtn';
+    iptalBtn.textContent = 'İptal';
+    iptalBtn.style = 'background:red;color:white;padding:8px 24px;border:none;border-radius:6px;font-weight:bold;';
+    btnBox.appendChild(kaydetBtn);
+    btnBox.appendChild(iptalBtn);
+    listBox.appendChild(btnBox);
+
+    outputContainer.appendChild(listBox);
+
+    let elemanlar = [];
+
+    function renderElemanlar() {
+        elemanlarContainer.innerHTML = '';
+        const listType = turSelect.value;
+
+        elemanlar.forEach((eleman, idx) => {
+            const elemanDiv = document.createElement('div');
+            elemanDiv.style = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;justify-content:center;';
+
+            // Sadece Variable List ise tip seçimi ekle
+            if (listType === 'Variable List') {
+                const tipSelect = document.createElement('select');
+                tipSelect.style = inputStyle + 'width:180px;';
+                SABIT_TIPLER.forEach((tip, tipIdx) => {
+                    const option = document.createElement('option');
+                    option.value = `//@TiplerPaketi/@tipler.${tipIdx}`;
+                    option.textContent = tip;
+                    tipSelect.appendChild(option);
+                });
+                if (formData.tiplerListesi && formData.tiplerListesi.length > 0) {
+                    formData.tiplerListesi.forEach((item, itemIdx) => {
+                        const option = document.createElement('option');
+                        option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + itemIdx}`;
+                        option.textContent = item.data.adi;
+                        tipSelect.appendChild(option);
+                    });
+                }
+                tipSelect.value = eleman.tip || '';
+                tipSelect.onchange = (e) => {
+                    eleman.tip = e.target.value;
+                };
+                elemanDiv.appendChild(tipSelect);
+            }
+
+            const degeriInput = document.createElement('input');
+            degeriInput.type = 'text';
+            degeriInput.value = eleman.degeri || '';
+            degeriInput.placeholder = 'Değeri';
+            degeriInput.style = inputStyle + 'width:120px;';
+            degeriInput.oninput = (e) => {
+                eleman.degeri = e.target.value;
+            };
+            elemanDiv.appendChild(degeriInput);
+
+            // Sadece Variable List seçiliyse silme butonunu göster
+            if (listType === 'Variable List') {
+                const silBtn = document.createElement('button');
+                silBtn.textContent = 'Sil';
+                silBtn.style = 'background:red;color:white;padding:4px 12px;border:none;border-radius:4px;font-weight:bold;';
+                silBtn.onclick = () => {
+                    elemanlar.splice(idx, 1);
+                    renderElemanlar();
+                };
+                elemanDiv.appendChild(silBtn);
+            }
+
+            elemanlarContainer.appendChild(elemanDiv);
+        });
+    }
+
+    function setupUIForListType(type) {
+        typeSpecificControlsContainer.innerHTML = '';
+        elemanlar = []; // Tür değiştiğinde elemanları sıfırla
+
+        if (type === 'Fixed List') {
+            const fixedControlsContainer = document.createElement('div');
+            fixedControlsContainer.style.display = 'grid';
+            fixedControlsContainer.style.gridTemplateColumns = 'auto 1fr';
+            fixedControlsContainer.style.gap = '8px 12px';
+            fixedControlsContainer.style.alignItems = 'center';
+            fixedControlsContainer.style.maxWidth = '350px';
+            fixedControlsContainer.style.margin = '0 auto';
+
+            // Liste Uzunluğu
+            const lengthLabel = document.createElement('label');
+            lengthLabel.textContent = 'Liste Uzunluğu:';
+            lengthLabel.style = labelStyle;
+            const lengthInput = document.createElement('input');
+            lengthInput.type = 'number';
+            lengthInput.min = '0';
+            lengthInput.style = inputStyle + 'width: 80px;';
+
+            // Eleman Tipi (Tekil Seçim)
+            const typeLabel = document.createElement('label');
+            typeLabel.textContent = 'Eleman Tipi:';
+            typeLabel.style = labelStyle;
+            const typeSelect = document.createElement('select');
+            typeSelect.style = inputStyle;
+            SABIT_TIPLER.forEach((tip, tipIdx) => {
+                const option = document.createElement('option');
+                option.value = `//@TiplerPaketi/@tipler.${tipIdx}`;
+                option.textContent = tip;
+                typeSelect.appendChild(option);
+            });
+            if (formData.tiplerListesi && formData.tiplerListesi.length > 0) {
+                formData.tiplerListesi.forEach((item, itemIdx) => {
+                    if (item.type !== 'liste') {
+                        const option = document.createElement('option');
+                        option.value = `//@TiplerPaketi/@tipler.${SABIT_TIPLER.length + itemIdx}`;
+                        option.textContent = item.data.adi;
+                        typeSelect.appendChild(option);
+                    }
+                });
+            }
+
+            const updateFixedListElements = () => {
+                const count = parseInt(lengthInput.value, 10) || 0;
+                const selectedType = typeSelect.value;
+                
+                while (elemanlar.length < count) {
+                    elemanlar.push({ tip: selectedType, degeri: '' });
+                }
+                elemanlar.length = count;
+
+                elemanlar.forEach(el => el.tip = selectedType);
+                
+                renderElemanlar();
+            };
+
+            lengthInput.oninput = updateFixedListElements;
+            typeSelect.onchange = updateFixedListElements;
+
+            fixedControlsContainer.appendChild(lengthLabel);
+            fixedControlsContainer.appendChild(lengthInput);
+            fixedControlsContainer.appendChild(typeLabel);
+            fixedControlsContainer.appendChild(typeSelect);
+            typeSpecificControlsContainer.appendChild(fixedControlsContainer);
+
+        } else { // Variable List
+            const elemanEkleBtn = document.createElement('button');
+            elemanEkleBtn.id = 'elemanEkleBtn';
+            elemanEkleBtn.textContent = '+ Eleman Ekle';
+            elemanEkleBtn.style = 'background:red;color:white;padding:8px 18px;border:none;border-radius:6px;font-weight:bold;display:block;margin:0 auto 16px auto;';
+            elemanEkleBtn.onclick = () => {
+                elemanlar.push({ tip: '', degeri: '' });
+                renderElemanlar();
+            };
+            typeSpecificControlsContainer.appendChild(elemanEkleBtn);
+        }
+        renderElemanlar();
+    }
+
+
+    kaydetBtn.onclick = () => {
+        const adi = document.getElementById('listeAdiInput').value.trim();
+        const aciklama = document.getElementById('listeAciklamaInput').value.trim();
+        const kod = document.getElementById('listeKodInput').value.trim();
+        const tur = turSelect.value;
+
+        if (!adi || !aciklama || !kod) {
+          alert('Lütfen liste için tüm üst alanları doldurun!');
+          return;
+        }
+        if (elemanlar.length === 0 || elemanlar.some(el => !el.tip.trim() || !el.degeri.trim())) {
+          alert('En az bir eleman ekleyin ve tüm eleman alanlarını doldurun!');
+          return;
+        }
+
+        if (!formData.tiplerListesi) formData.tiplerListesi = [];
+        formData.tiplerListesi.push({
+          type: 'liste',
+          data: {
+            adi,
+            aciklama,
+            kod,
+            tur, // Liste türünü de kaydet
+            elemanlar: [...elemanlar]
+          }
+        });
+
+        guncelleTiplerMenusu();
+        outputContainer.innerHTML = '';
+    };
+
+    iptalBtn.onclick = () => {
+        outputContainer.innerHTML = '';
+    };
+
+    // Olay dinleyicisini ve ilk kurulumu sona taşı
+    turSelect.addEventListener('change', (e) => {
+        setupUIForListType(e.target.value);
+    });
+
+    // Başlangıç UI'ını kur
+    setupUIForListType(turSelect.value);
+}
+
+
 // Menüde tipler ve structlar listesi güncelleme
 function guncelleTiplerMenusu() {
   // Tipler sütunu
-  const tiplerTd = document.getElementById('tiplerListesi');
-  tiplerTd.innerHTML = '';
+  const tiplersTd = document.getElementById('tiplerListesi');
+  tiplersTd.innerHTML = '';
   if (formData.tiplerListesi && formData.tiplerListesi.length > 0) {
     const ul = document.createElement('ul');
     formData.tiplerListesi.forEach(item => {
@@ -1166,7 +1489,7 @@ function guncelleTiplerMenusu() {
         ul.insertBefore(li, ul.firstChild);
       }
     });
-    tiplerTd.appendChild(ul);
+    tiplersTd.appendChild(ul);
   }
 
   // Structlar sütunu
@@ -1187,12 +1510,14 @@ function guncelleTiplerMenusu() {
   // Listeler sütunu
   const listelerTd = document.getElementById('listelerListesi');
   listelerTd.innerHTML = '';
-  if (formData.lists && formData.lists.length > 0) {
+  if (formData.tiplerListesi && formData.tiplerListesi.length > 0) {
     const ul = document.createElement('ul');
-    formData.lists.forEach(list => {
-      const li = document.createElement('li');
-      li.textContent = list.adi;
-      ul.insertBefore(li, ul.firstChild);
+    formData.tiplerListesi.forEach(item => {
+      if (item.type === 'liste') {
+        const li = document.createElement('li');
+        li.textContent = item.data.adi;
+        ul.insertBefore(li, ul.firstChild);
+      }
     });
     listelerTd.appendChild(ul);
   }
@@ -1208,6 +1533,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnStructEkle = document.querySelector('.menu-button[data-action="structEkle"]');
   if (btnStructEkle) {
     btnStructEkle.addEventListener('click', structEkleEkraniOlustur);
+  }
+
+  const btnListEkle = document.querySelector('.menu-button[data-action="listEkle"]');
+  if (btnListEkle) {
+    btnListEkle.addEventListener('click', listeEkleEkraniOlustur);
   }
 
   // Menüyü güncelle
