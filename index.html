@@ -18,32 +18,27 @@
     <div class="menu">
       <div class="menu-item">
         <span class="arrow" onclick="toggleMenu('submenuProje', this)">▶</span>
-        <button class="menu-button" data-action="proje">Proje</button><span class="attribute-list">a,b,c</span>
+        <button class="menu-button" data-action="proje">Proje</button><span class="attribute-list"></span>
       </div>
       <div class="submenu" id="submenuProje">
         <div class="menu-item">
           <span class="arrow" onclick="toggleMenu('submenuBilesen', this)">▶</span>
-          <button class="menu-button" data-action="bilesen">Bileşen</button><span class="attribute-list">a</span>
+          <button class="menu-button" data-action="bilesen">Bileşen</button><span class="attribute-list"></span>
         </div>
         <div class="submenu" id="submenuBilesen">
           <div class="menu-item">
             <span class="arrow" onclick="toggleMenu('submenuArayuz', this)">▶</span>
-            <button class="menu-button" data-action="arayuz">Arayüz</button><span class="attribute-list">b</span>
+            <button class="menu-button" data-action="arayuz">Arayüz</button><span class="attribute-list"></span>
           </div>
           <div class="submenu" id="submenuArayuz">
             <div class="menu-item">
               <span class="arrow" onclick="toggleMenu('submenuServis', this)">▶</span>
-              <button class="menu-button" data-action="servis">Servis</button><span class="attribute-list">cc, d</span>
+              <button class="menu-button" data-action="servis">Servis</button><span class="attribute-list"></span>
             </div>
             <div class="submenu" id="submenuServis">
               <div class="menu-item">
                 <span class="arrow" onclick="toggleMenu('submenuMesaj', this)">▶</span>
-                <button class="menu-button" data-action="mesaj">Mesaj</button><span class="attribute-list">d ,e, f,g</span>
-              </div>
-              <div class="submenu" id="submenuMesaj">
-                <div class="menu-item">
-                  <button class="menu-button" data-action="mesaj">Parametre</button><span class="attribute-list">a, b, c</span>
-                </div>
+                <button class="menu-button" data-action="mesaj">Mesaj</button><span class="attribute-list"></span>
               </div>
             </div>
           </div>
@@ -53,22 +48,24 @@
           <span class="arrow" onclick="toggleMenu('submenuTipler', this)">▶</span>
           <button class="menu-button" data-action="tipler">Tipler Paketi</button>
         </div>
-        <table id="tiplerTablosu" border="1">
-          <thead>
-            <tr>
-              <th> <button class="menu-button" data-action="tipEkle">Tip Ekle</button></th>
-              <th> <button class="menu-button" data-action="structEkle">Struct Ekle</button></th>
-              <th> <button class="menu-button" data-action="listEkle">Liste Ekle</button></th>
-            </tr>
-          </thead>
-        <tbody>
-            <tr>
-              <td id="tiplerListesi"></td>
-              <td id="structlarListesi"></td>
-              <td id="listelerListesi"></td>
-            </tr>
-        </tbody>
-        </table>
+        <div class="submenu" id="submenuTipler">
+          <table id="tiplerTablosu" border="1">
+            <thead>
+              <tr>
+                <th> <button class="menu-button" data-action="tipEkle">Tip Ekle</button></th>
+                <th> <button class="menu-button" data-action="structEkle">Struct Ekle</button></th>
+                <th> <button class="menu-button" data-action="listEkle">Liste Ekle</button></th>
+              </tr>
+            </thead>
+          <tbody>
+              <tr>
+                <td id="tiplerListesi"></td>
+                <td id="structlarListesi"></td>
+                <td id="listelerListesi"></td>
+              </tr>
+          </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div id="output-area" class="output-area-right">
